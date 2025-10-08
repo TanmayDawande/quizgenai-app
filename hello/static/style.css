@@ -1,0 +1,288 @@
+/* --- Global Variables and Resets --- */
+:root {
+    --primary-color: #6a5acd; /* SlateBlue */
+    --primary-light: #f0eefc;
+    --secondary-color: #f0f0f0;
+    --text-color: #333;
+    --correct-color: #28a745;
+    --incorrect-color: #dc3545;
+    --bg-color: #f8f9fa; /* Changed to a lighter grey for better contrast */
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    /* REMOVED centering properties to allow for flex layout */
+}
+
+/* --- Main Layout --- */
+.page-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    flex-shrink: 0; /* Prevents sidebar from shrinking */
+}
+
+.sidebar-header {
+    margin-bottom: 30px;
+    padding-left: 10px;
+}
+
+.sidebar-header h2 {
+    color: #4a4a4a;
+    font-weight: 600;
+    margin: 0;
+}
+
+.sidebar-nav ul {
+    list-style-type: none;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--primary-light);
+    color: var(--text-color);
+}
+
+.sidebar-nav li.active a {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* --- Main Content Area --- */
+.container {
+    flex-grow: 1; /* Allows this to fill the remaining space */
+    padding: 40px;
+    background-color: transparent; /* The container is now just a wrapper, not a white card */
+    box-shadow: none; /* Shadow is on the inner sections instead */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Aligns content to the top */
+    overflow-y: auto;
+}
+
+/* This targets the actual content boxes inside the container */
+.container > section {
+    background-color: white;
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+h1, h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* --- Component Styles (Your Original Code) --- */
+
+/* Upload Area */
+.upload-area {
+    margin: 30px 0;
+    padding: 30px;
+    border: 2px dashed #ddd;
+    border-radius: var(--border-radius);
+    background-color: #fafafa;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.upload-label:hover {
+    background-color: #5a4ab9;
+    transform: translateY(-2px);
+}
+
+.file-name {
+    display: block;
+    margin-top: 15px;
+    font-style: italic;
+    color: #777;
+}
+
+/* Buttons */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #5a4ab9;
+    box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.submit-btn {
+    margin-top: 20px;
+}
+
+#reset-btn {
+    background-color: #777;
+}
+
+#reset-btn:hover {
+    background-color: #666;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Hidden Class */
+.hidden {
+    display: none;
+}
+
+/* Loader */
+#loading-container p {
+    margin-top: 20px;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.loader {
+    border: 6px solid var(--secondary-color);
+    border-top: 6px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Quiz Form */
+#quiz-form {
+    text-align: left;
+}
+
+.question-block {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    border-left: 5px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.question-text {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.options-list {
+    list-style-type: none;
+}
+
+.option {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.option:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.option input[type="radio"] {
+    margin-right: 15px;
+    accent-color: var(--primary-color);
+    width: 18px;
+    height: 18px;
+}
+
+/* Results */
+#score-display {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+#feedback-area .question-block.correct {
+    border-left-color: var(--correct-color);
+    background-color: #f0fff4;
+}
+
+#feedback-area .question-block.incorrect {
+    border-left-color: var(--incorrect-color);
+    background-color: #fff5f5;
+}
+
+.correct-answer-text {
+    font-weight: bold;
+    color: var(--correct-color);
+    margin-top: 10px;
+    display: block;
+}
