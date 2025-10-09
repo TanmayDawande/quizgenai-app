@@ -23,71 +23,78 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pdfInput.files.length > 0) {
             const fileName = pdfInput.files[0].name;
             fileNameDisplay.textContent = fileName;
-            generateBtn.disabled = false; // Enable the generate button
+            generateBtn.disabled = false;
         } else {
             fileNameDisplay.textContent = 'No file selected';
-            generateBtn.disabled = true; // Disable if no file
+            generateBtn.disabled = true;
         }
     });
 
     // 2. When the "Generate Quiz" button is clicked
-    generateBtn.addEventListener('click', () => {
+    generateBtn.addEventListener('click', async () => {
+        const file = pdfInput.files[0];
+        if (!file) {
+            alert("Please select a PDF file first.");
+            return;
+        }
+
         // --- UX: Switch to loading view ---
         uploadContainer.classList.add('hidden');
         loadingContainer.classList.remove('hidden');
+        resultsContainer.classList.add('hidden');
+        quizContainer.classList.add('hidden');
 
-        // --- BACKEND SIMULATION ---
-        // In a real app, you would send the PDF to a server here.
-        // We'll simulate a 3-second processing time.
-        setTimeout(() => {
-            // This is mock data. A real backend would generate this.
-            const mockQuizData = [
-                {
-                    question: "What is the capital of France?",
-                    options: ["Berlin", "Madrid", "Paris", "Rome"],
-                    correctAnswer: 2 // Index of the correct answer
+
+        // --- REAL BACKEND API CALL ---
+        const formData = new FormData();
+        formData.append('pdf', file); 
+
+        try {
+            // Send the file to your Django endpoint
+            const response = await fetch('/api/generate-quiz/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
                 },
-                {
-                    question: "Which planet is known as the Red Planet?",
-                    options: ["Earth", "Mars", "Jupiter", "Venus"],
-                    correctAnswer: 1
-                },
-                {
-                    question: "What is the result of 2 + 2 * 2?",
-                    options: ["8", "6", "4", "10"],
-                    correctAnswer: 1
-                }
-            ];
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Something went wrong on the server.');
+            }
             
-            quizData = mockQuizData;
+            quizData = data; 
             displayQuiz(quizData);
 
             // --- UX: Switch to quiz view ---
             loadingContainer.classList.add('hidden');
             quizContainer.classList.remove('hidden');
 
-        }, 3000); // 3-second delay
+        } catch (error) {
+            console.error("Error generating quiz:", error);
+            alert(`An error occurred: ${error.message}`);
+            
+            // Switch back to upload view on error
+            loadingContainer.classList.add('hidden');
+            uploadContainer.classList.remove('hidden');
+        }
     });
 
     // 3. When the quiz form is submitted
     quizForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent default form submission
-        
+        event.preventDefault();
         const score = calculateScore();
         displayResults(score);
-
-        // --- UX: Switch to results view ---
         quizContainer.classList.add('hidden');
         resultsContainer.classList.remove('hidden');
     });
 
     // 4. When the "Try Another PDF" button is clicked
     resetBtn.addEventListener('click', () => {
-        // --- UX: Reset to initial upload screen ---
         resultsContainer.classList.add('hidden');
         uploadContainer.classList.remove('hidden');
-        
-        // Reset state
         pdfInput.value = '';
         fileNameDisplay.textContent = 'No file selected';
         generateBtn.disabled = true;
@@ -99,12 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Helper Functions ---
 
-    /**
-     * Dynamically creates and displays the quiz questions and options.
-     * @param {Array} questions - The array of question objects.
-     */
     function displayQuiz(questions) {
-        quizForm.innerHTML = ''; // Clear previous quiz
+        quizForm.innerHTML = '';
         questions.forEach((q, index) => {
             const questionBlock = document.createElement('div');
             questionBlock.classList.add('question-block');
@@ -142,10 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /**
-     * Calculates the user's score based on their answers.
-     * @returns {number} The number of correct answers.
-     */
     function calculateScore() {
         let score = 0;
         quizData.forEach((q, index) => {
@@ -157,13 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return score;
     }
 
-    /**
-     * Displays the final score and provides feedback on each question.
-     * @param {number} score - The user's final score.
-     */
     function displayResults(score) {
         scoreDisplay.textContent = `You scored ${score} out of ${quizData.length}!`;
-        feedbackArea.innerHTML = ''; // Clear previous feedback
+        feedbackArea.innerHTML = '';
 
         quizData.forEach((q, index) => {
             const feedbackBlock = document.createElement('div');
@@ -195,5 +190,21 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackBlock.appendChild(resultText);
             feedbackArea.appendChild(feedbackBlock);
         });
+    }
+
+    // Helper function required for Django POST requests
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 });

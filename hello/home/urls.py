@@ -1,8 +1,8 @@
 from django.urls import path
-from home import views
+from . import views
 
 urlpatterns = [
     path("", views.index, name="home"),
-    path("about", views.about, name="about"),
-    path("description", views.description, name = "description")
+    path("description/", views.description, name="description"),
+    path("api/generate-quiz/", views.generate_quiz_view, name="generate-quiz"),
 ]
