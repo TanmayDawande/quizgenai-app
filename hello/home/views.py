@@ -5,3 +5,5 @@ def index(requests):
     # return HttpResponse("This is a homepage")
 def about(requests):
     return HttpResponse("This is made by tanmay")
+def description(requests):
+    return render(requests, 'description.html')
