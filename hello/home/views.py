@@ -32,12 +32,14 @@ def generate_quiz_view(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
         
     pdf_file = request.FILES.get('pdf')
+
+    num_questions = request.POST.get('num_questions', 5)
     if not pdf_file:
         return JsonResponse({'error': 'No PDF file provided'}, status=400)
 
     try:
         # The view now calls the service function to do all the heavy lifting
-        quiz_data = services.generate_quiz_from_pdf(pdf_file)
+        quiz_data = services.generate_quiz_from_pdf(pdf_file, num_questions)
         
         # The view's only remaining job is to send the result back as JSON
         return JsonResponse(quiz_data, safe=False)
@@ -45,3 +47,4 @@ def generate_quiz_view(request):
     except Exception as e:
         # Handle any errors that might happen in the service
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+    

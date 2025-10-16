@@ -13,12 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('score-display');
     const feedbackArea = document.getElementById('feedback-area');
     const resetBtn = document.getElementById('reset-btn');
+    
+    const questionCountSlider = document.getElementById('question-count-slider');
+    const sliderValueDisplay = document.getElementById('slider-value');
 
     let quizData = []; // To store the generated quiz questions
 
     // --- Event Listeners ---
 
-    // 1. When a file is selected
+    // 1. Update slider value display when it's moved
+    if (questionCountSlider) {
+        questionCountSlider.addEventListener('input', () => {
+            sliderValueDisplay.textContent = questionCountSlider.value;
+        });
+    }
+
+    // 2. When a file is selected, update the file name display
     pdfInput.addEventListener('change', () => {
         if (pdfInput.files.length > 0) {
             const fileName = pdfInput.files[0].name;
@@ -30,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. When the "Generate Quiz" button is clicked
+    // 3. When the "Generate Quiz" button is clicked, call the backend
     generateBtn.addEventListener('click', async () => {
         const file = pdfInput.files[0];
         if (!file) {
@@ -47,10 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- REAL BACKEND API CALL ---
         const formData = new FormData();
-        formData.append('pdf', file); 
+        formData.append('pdf', file);
+        formData.append('num_questions', questionCountSlider.value);
+
 
         try {
-            // Send the file to your Django endpoint
+            // Send the file and number of questions to your Django endpoint
             const response = await fetch('/api/generate-quiz/', {
                 method: 'POST',
                 headers: {
@@ -82,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. When the quiz form is submitted
+    // 4. When the quiz form is submitted, calculate and display score
     quizForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const score = calculateScore();
@@ -91,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.classList.remove('hidden');
     });
 
-    // 4. When the "Try Another PDF" button is clicked
+    // 5. When the "Try Another PDF" button is clicked, reset the UI
     resetBtn.addEventListener('click', () => {
         resultsContainer.classList.add('hidden');
         uploadContainer.classList.remove('hidden');
@@ -206,5 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         return cookieValue;
-    }
+    }   
 });
+

@@ -13,7 +13,7 @@ except Exception as e:
     print(f"Error configuring Gemini API in services.py: {e}")
     model = None
 
-def generate_quiz_from_pdf(pdf_file):
+def generate_quiz_from_pdf(pdf_file, num_questions):
     """
     Extracts text from a PDF and uses Gemini to generate a quiz.
     This version includes robust error handling for the AI's response.
@@ -30,7 +30,7 @@ def generate_quiz_from_pdf(pdf_file):
 
     # 2. Create the prompt for the AI
     prompt = f"""
-    Based on the following text, create a multiple-choice quiz with 5 questions.
+    Based on the following text, create a multiple-choice quiz with {num_questions} questions.
     The response MUST be a valid JSON array and nothing else. Do not include any text, code block markers like ```json, or any other formatting before or after the JSON array.
 
     Each object in the array must have these exact keys:
