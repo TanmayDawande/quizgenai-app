@@ -1,0 +1,77 @@
+.history-list {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.history-item {
+    background-color: #fafbff; /* A slightly off-white for the card */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quiz-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.quiz-date {
+    font-size: 0.9rem;
+    color: var(--subtle-text-color);
+}
+
+/* --- Button Group Styling --- */
+.button-group {
+    display: flex;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+    gap: 16px; /* Adds space between the buttons */
+    margin-top: 20px;
+}
+
+/* --- Base styles for both buttons --- */
+.primary-btn, .secondary-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s, transform 0.2s;
+    flex-grow: 1; /* Allows buttons to share space */
+}
+
+/* Styles for the main action button (Retake Quiz) */
+.primary-btn {
+    background-color: var(--container-bg);
+    color: var(--subtle-text-color);
+    border: 1px solid var(--border-color);
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-hover);
+    transform: translateY(-2px);
+    color: var(--container-bg);
+}
+
+/* Styles for the secondary action button (View Quiz) */
+.secondary-btn {
+    background-color: var(--container-bg);
+    color: var(--subtle-text-color);
+    border: 1px solid var(--border-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-hover);
+    transform: translateY(-2px);
+    color: var(--container-bg);
+}
+

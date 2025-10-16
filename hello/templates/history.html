@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz History</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'history.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>QuizGenAi</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/">New Quiz</a></li>
+                    <li class="active"><a href="/history/">History</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-content-area">
+            <main class="container">
+                <header>
+                    <h1>Quiz History 📜</h1>
+                    <p>Here are the quizzes you have generated in the past.</p>
+                </header>
+
+                <div class="history-list">
+                    {% if quizzes %}
+                        {% for quiz in quizzes %}
+                            <div class="history-item">
+                                <h3 class="quiz-title">{{ quiz.title }}</h3>
+                                <p class="quiz-date">Created on: {{ quiz.created_at|date:"F j, Y, g:i a" }}</p>
+                                
+                                <!-- This new div groups the two buttons together -->
+                                <div class="button-group">
+                                    <a href="{% url 'quiz_detail' quiz.id %}" class="secondary-btn">View Quiz</a>
+                                    <a href="{% url 'quiz_retake' quiz.id %}" class="primary-btn">Retake Quiz</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>You haven't generated any quizzes yet.</p>
+                    {% endif %}
+
+                    {% if error %}
+                        <p style="color: red; margin-top: 20px;">{{ error }}</p>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
+

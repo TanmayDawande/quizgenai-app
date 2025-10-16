@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retake: {{ quiz.title }}</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2><a href="/">QuizGenAi</a></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/">New Quiz</a></li>
+                    <li><a href="/description/">Description</a></li>
+                    <li class="active"><a href="/history/">History</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-content-area">
+            <main class="container">
+                <section id="quiz-container">
+                    <header>
+                        <h1>{{ quiz.title }}</h1>
+                        <p>Retaking a quiz from your history. Good luck!</p>
+                    </header>
+                    <form id="quiz-form"></form> <!-- The JS will build the quiz here -->
+                    <button type="submit" form="quiz-form" class="submit-btn">Submit Answers</button>
+                </section>
+
+                <section id="results-container" class="hidden">
+                    <h2>Quiz Results 🏆</h2>
+                    <p id="score-display">You scored 0 out of 0!</p>
+                    <div id="feedback-area"></div>
+                    <a href="/history/" class="submit-btn" style="text-decoration: none; display: block; margin-top: 20px;">Back to History</a>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- THIS IS THE CORRECTED PART -->
+    <!-- This tag safely converts your Python quiz data into a JSON script tag -->
+    {{ quiz.quiz_data|json_script:"quiz-data" }}
+
+    <!-- This links to the JavaScript file that reads the data and builds the quiz -->
+    <script src="{% static 'quiz_retake.js' %}"></script>
+</body>
+</html>
+

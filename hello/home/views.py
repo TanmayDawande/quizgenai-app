@@ -1,50 +1,55 @@
-# hello/home/views.py
-
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404 # Import get_object_or_404 here
 from django.http import JsonResponse
-from . import services  # Import your new services.py file
+from . import services
+from .models import Quiz
 
-# --- Your Page-Rendering Views ---
+# --- Page-Rendering Views ---
 
 def index(request):
+    """Renders the main quiz generator page."""
     return render(request, 'index.html')
 
-def description(request):
-    return render(request, 'description.html')
+def history_view(request):
+    """Fetches all saved quizzes and renders the history page."""
+    quizzes = Quiz.objects.all().order_by('-created_at')
+    return render(request, 'history.html', {'quizzes': quizzes})
 
-def about(request):
-    """Simple About page view so `home.urls` can reference `views.about`.
+def quiz_detail_view(request, quiz_id):
+    """Fetches a specific quiz and renders the VIEW-ONLY detail page."""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    return render(request, 'quiz_detail.html', {'quiz': quiz})
 
-    Renders the `index.html` template as a placeholder (there is no
-    dedicated about.html in this project). Change to a different template
-    if you add one later.
-    """
-    return render(request, 'index.html')
+def quiz_retake_view(request, quiz_id):
+    """Fetches a specific quiz and renders the INTERACTIVE retake page."""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    return render(request, 'quiz_retake.html', {'quiz': quiz})
 
-# --- Your API View ---
+
+# --- API View ---
 
 def generate_quiz_view(request):
     """
-    This view handles the API request from the frontend.
-    It's a "thin" view that coordinates the request and response.
+    Handles the API request to generate a quiz and saves it.
     """
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
         
     pdf_file = request.FILES.get('pdf')
-
     num_questions = request.POST.get('num_questions', 5)
+
     if not pdf_file:
         return JsonResponse({'error': 'No PDF file provided'}, status=400)
 
     try:
-        # The view now calls the service function to do all the heavy lifting
         quiz_data = services.generate_quiz_from_pdf(pdf_file, num_questions)
         
-        # The view's only remaining job is to send the result back as JSON
+        Quiz.objects.create(
+            title=pdf_file.name,
+            quiz_data=quiz_data
+        )
+        
         return JsonResponse(quiz_data, safe=False)
         
     except Exception as e:
-        # Handle any errors that might happen in the service
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-    
+

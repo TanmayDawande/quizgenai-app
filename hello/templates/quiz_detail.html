@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ quiz.title }}</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2><a href="/">QuizGenAi</a></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/">New Quiz</a></li>
+                    <li><a href="/description/">Description</a></li>
+                    <li class="active"><a href="/history/">History</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-content-area">
+            <main class="container">
+                <section id="quiz-container">
+                    <header>
+                        <h1>{{ quiz.title }}</h1>
+                        <p>Viewing a quiz from your history. The correct answer is highlighted.</p>
+                    </header>
+
+                    <!-- This section now directly displays the quiz questions and answers -->
+                    <div id="quiz-display">
+                        {% for question in quiz.quiz_data %}
+                            <div class="question-block">
+                                <p class="question-text">{{ forloop.counter }}. {{ question.question }}</p>
+                                <ul class="options-list view-only">
+                                    {% for option in question.options %}
+                                        <li class="option {% if forloop.counter0 == question.correctAnswer %}correct-answer-display{% endif %}">
+                                            {{ option }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <a href="/history/" class="submit-btn" style="text-decoration: none; display: block; margin-top: 40px;">Back to History</a>
+                </section>
+            </main>
+        </div>
+    </div>
+    <!-- The JavaScript file is no longer needed for this page -->
+</body>
+</html>
+

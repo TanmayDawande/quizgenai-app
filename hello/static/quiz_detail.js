@@ -1,100 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Get references to all the necessary DOM elements
-    const uploadContainer = document.getElementById('upload-container');
-    const loadingContainer = document.getElementById('loading-container');
+    // Get the containers
     const quizContainer = document.getElementById('quiz-container');
     const resultsContainer = document.getElementById('results-container');
-
-    const pdfInput = document.getElementById('pdf-input');
-    const fileNameDisplay = document.getElementById('file-name-display');
-    const generateBtn = document.getElementById('generate-btn');
-
     const quizForm = document.getElementById('quiz-form');
     const scoreDisplay = document.getElementById('score-display');
     const feedbackArea = document.getElementById('feedback-area');
-    const resetBtn = document.getElementById('reset-btn');
+
+    // Get the quiz data that was passed from Django
+    const quizDataElement = document.getElementById('quiz-data');
+    const quizData = JSON.parse(quizDataElement.textContent);
+
+    // --- Main Functions ---
     
-    const questionCountSlider = document.getElementById('question-count-slider');
-    const sliderValueDisplay = document.getElementById('slider-value');
+    displayQuiz(quizData);
 
-    let quizData = []; // To store the generated quiz questions
-
-    // --- Event Listeners ---
-
-    // 1. Update slider value display when it's moved
-    if (questionCountSlider) {
-        questionCountSlider.addEventListener('input', () => {
-            sliderValueDisplay.textContent = questionCountSlider.value;
-        });
-    }
-
-    // 2. When a file is selected, update the file name display
-    pdfInput.addEventListener('change', () => {
-        if (pdfInput.files.length > 0) {
-            const fileName = pdfInput.files[0].name;
-            fileNameDisplay.textContent = fileName;
-            generateBtn.disabled = false;
-        } else {
-            fileNameDisplay.textContent = 'No file selected';
-            generateBtn.disabled = true;
-        }
-    });
-
-    // 3. When the "Generate Quiz" button is clicked, call the backend
-    generateBtn.addEventListener('click', async () => {
-        const file = pdfInput.files[0];
-        if (!file) {
-            alert("Please select a PDF file first.");
-            return;
-        }
-
-        // --- UX: Switch to loading view ---
-        uploadContainer.classList.add('hidden');
-        loadingContainer.classList.remove('hidden');
-        resultsContainer.classList.add('hidden');
-        quizContainer.classList.add('hidden');
-
-
-        // --- REAL BACKEND API CALL ---
-        const formData = new FormData();
-        formData.append('pdf', file);
-        formData.append('num_questions', questionCountSlider.value);
-
-
-        try {
-            // Send the file and number of questions to your Django endpoint
-            const response = await fetch('/api/generate-quiz/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: formData,
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Something went wrong on the server.');
-            }
-            
-            quizData = data; 
-            displayQuiz(quizData);
-
-            // --- UX: Switch to quiz view ---
-            loadingContainer.classList.add('hidden');
-            quizContainer.classList.remove('hidden');
-
-        } catch (error) {
-            console.error("Error generating quiz:", error);
-            alert(`An error occurred: ${error.message}`);
-            
-            // Switch back to upload view on error
-            loadingContainer.classList.add('hidden');
-            uploadContainer.classList.remove('hidden');
-        }
-    });
-
-    // 4. When the quiz form is submitted, calculate and display score
     quizForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const score = calculateScore();
@@ -103,22 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.classList.remove('hidden');
     });
 
-    // 5. When the "Try Another PDF" button is clicked, reset the UI
-    resetBtn.addEventListener('click', () => {
-        resultsContainer.classList.add('hidden');
-        uploadContainer.classList.remove('hidden');
-        pdfInput.value = '';
-        fileNameDisplay.textContent = 'No file selected';
-        generateBtn.disabled = true;
-        quizForm.innerHTML = '';
-        feedbackArea.innerHTML = '';
-        quizData = [];
-    });
-
 
     // --- Helper Functions ---
 
     function displayQuiz(questions) {
+        if (!questions || !Array.isArray(questions)) return;
         quizForm.innerHTML = '';
         questions.forEach((q, index) => {
             const questionBlock = document.createElement('div');
@@ -148,15 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 optionItem.appendChild(radioInput);
                 optionItem.appendChild(optionLabel);
+                optionsList.appendChild(optionItem);
 
-                // THIS IS THE NEW CODE BLOCK
-                // Add a click listener to the entire box (the <li>)
+                // Make the whole box clickable
                 optionItem.addEventListener('click', () => {
-                    // Programmatically check the radio button inside this box
                     radioInput.checked = true;
                 });
-                
-                optionsList.appendChild(optionItem);
             });
             
             questionBlock.appendChild(questionText);
@@ -211,21 +116,4 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackArea.appendChild(feedbackBlock);
         });
     }
-
-    // Helper function required for Django POST requests
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }   
 });
-

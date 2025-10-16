@@ -1,83 +1,78 @@
-    {% load static %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PDF to MCQ Quiz Generator</title>
-        
-        <link rel="stylesheet" href="{% static 'style.css' %}">
-        
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    </head>
-    <body>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to MCQ Quiz Generator</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
 
-        <div class="page-wrapper">
-            <aside id="sidebar">
-                <div class="sidebar-header">
-                    <h2>QuizGenAi</h2>
-                </div>
-                <nav class="sidebar-nav">
-                    <ul>
-                        <li class="active"><a href="/">New Quiz</a></li>
-                        <li><a href="/description/">Description</a></li>
-                        <li><a href="#">Wiki</a></li>
-                        <li><a href="#">Profile</a></li>
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </nav>
-            </aside>
-            <div class="main-content-area">
-                <main class="container">
-                    <section id="upload-container">
-                        <header>
-                            <h1>Quiz Generator ✨</h1>
-                            <p>Upload your PDF document to instantly generate a multiple-choice quiz.</p>
-                        </header>
-                        <div class="upload-area">
-                            <input type="file" id="pdf-input" accept=".pdf" hidden>
-                            <label for="pdf-input" class="upload-label">
-                                <span>📁 Choose a PDF</span>
-                            </label>
-                            <span id="file-name-display" class="file-name">No file selected</span>
-                        </div>
-
-                        <!-- The slider is now before the button -->
-                        <div class="question-count-container">
-                            <label for="question-count-slider">Number of Questions: <span id="slider-value">5</span></label>
-                            <input type="range" id="question-count-slider" min="1" max="30" value="5">
-                        </div>
-
-                        <!-- The button is now after the slider -->
-                        <button id="generate-btn" disabled>Generate Quiz</button>
-                        
-                    </section>
-
-                    <section id="loading-container" class="hidden">
-                        <div class="loader"></div>
-                        <p>Analyzing your document and generating questions...</p>
-                    </section>
-
-                    <section id="quiz-container" class="hidden">
-                        <h2>Your Quiz is Ready!</h2>
-                        <form id="quiz-form"></form>
-                        <button type="submit" form="quiz-form" class="submit-btn">Submit Answers</button>
-                    </section>
-
-                    <section id="results-container" class="hidden">
-                        <h2>Quiz Results 🏆</h2>
-                        <p id="score-display">You scored 0 out of 0!</p>
-                        <div id="feedback-area"></div>
-                        <button id="reset-btn">Try Another PDF</button>
-                    </section>
-                </main>
+    <div class="page-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>QuizGenAi</h2>
             </div>
-        </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="">New Quiz</a></li>
+                    <li><a href="/history">History</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <div class="main-content-area">
+            <main class="container">
+                <section id="upload-container">
+                    <header>
+                        <h1>Quiz Generator ✨</h1>
+                        <p>Upload your PDF document to instantly generate a multiple-choice quiz.</p>
+                    </header>
+                    <div class="upload-area">
+                        <input type="file" id="pdf-input" accept=".pdf" hidden>
+                        <label for="pdf-input" class="upload-label">
+                            <span>📁 Choose a PDF</span>
+                        </label>
+                        <span id="file-name-display" class="file-name">No file selected</span>
+                    </div>
 
-        <script src="{% static 'script.js' %}"></script>
-    </body>
-    </html>
+                    <div class="question-count-container">
+                        <label for="question-count-slider">Number of Questions: <span id="slider-value">5</span></label>
+                        <input type="range" id="question-count-slider" min="1" max="30" value="5">
+                    </div>
+
+                    <button id="generate-btn" disabled>Generate Quiz</button>
+                    
+                </section>
+
+                <section id="loading-container" class="hidden">
+                    <!-- The loader and text are now correctly placed inside the hidden container -->
+                    <div class="loader"></div>
+                    <p>Analyzing your document and generating questions...</p>
+                </section>
+
+                <section id="quiz-container" class="hidden">
+                    <h2>Your Quiz is Ready!</h2>
+                    <form id="quiz-form"></form>
+                    <button type="submit" form="quiz-form" class="submit-btn">Submit Answers</button>
+                </section>
+
+                <section id="results-container" class="hidden">
+                    <h2>Quiz Results 🏆</h2>
+                    <p id="score-display">You scored 0 out of 0!</p>
+                    <div id="feedback-area"></div>
+                    <button id="reset-btn">Try Another PDF</button>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>
 
