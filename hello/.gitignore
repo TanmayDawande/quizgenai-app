@@ -7,3 +7,5 @@ pycache/*.pyc
 venv/
 
 .vscode/.idea/
+
+#hello
