@@ -18,22 +18,22 @@ This project is built using a robust combination of backend and frontend technol
 ### Backend Technologies
 These are the core server-side components and AI integration:
 
-* **Python 3:** ![Python Logo](assets/img/python_logo.png)
-* **Django:** ![Django Logo](assets/img/django_logo.png)
-* **Google Gemini API:** ![Gemini Logo](assets/img/gemini_logo.png)
+* **Python 3:** 
+* **Django:** 
+* **Google Gemini API:** 
 * **PyMuPDF (`fitz`):** For efficient PDF parsing and text extraction.
 * **`python-decouple`:** For secure management of environment variables.
 
 ### Frontend Technologies
 These define the user interface and client-side interactivity:
 
-* **HTML:** ![HTML Logo](assets/img/html_logo.png)
-* **CSS:** ![CSS Logo](assets/img/css_logo.png)
-* **JavaScript (Vanilla):** ![JavaScript Logo](assets/img/javascript_logo.png)
+* **HTML:** 
+* **CSS:** 
+* **JavaScript (Vanilla):** 
 
 ### Database
 
-* **SQLite 3:** ![SQLite Logo](assets/img/sqlite_logo.png) (Default Django database, suitable for local development)
+* **SQLite 3:**  (Default Django database, suitable for local development)
 
 ## Local Setup and Installation
 
