@@ -17,12 +17,12 @@
     <div class="page-wrapper">
         <aside id="sidebar">
             <div class="sidebar-header">
-                <h2>QuizGenAi</h2>
+                <h2></a>QuizGenAi</a></h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="">New Quiz</a></li>
-                    <li><a href="/history">History</a></li>
+                    <li class="active"><a href="/">New Quiz</a></li>
+                    <li><a href="/history/">History</a></li>
                 </ul>
             </nav>
         </aside>
@@ -36,22 +36,29 @@
                     <div class="upload-area">
                         <input type="file" id="pdf-input" accept=".pdf" hidden>
                         <label for="pdf-input" class="upload-label">
-                            <span>📁 Choose a PDF</span>
+                            <span>Choose a PDF</span>
                         </label>
                         <span id="file-name-display" class="file-name">No file selected</span>
                     </div>
 
+                    <!-- ADDED: Custom Instructions Textarea -->
+                    <div class="custom-instructions-container">
+                        <label for="custom-instructions">Custom Instructions (Optional):</label>
+                        <textarea id="custom-instructions" rows="3" placeholder="e.g., focus on definitions, make questions conceptual, generate true/false questions..."></textarea>
+                    </div>
+
+                    <!-- The slider -->
                     <div class="question-count-container">
                         <label for="question-count-slider">Number of Questions: <span id="slider-value">5</span></label>
                         <input type="range" id="question-count-slider" min="1" max="30" value="5">
                     </div>
 
+                    <!-- The button -->
                     <button id="generate-btn" disabled>Generate Quiz</button>
                     
                 </section>
 
                 <section id="loading-container" class="hidden">
-                    <!-- The loader and text are now correctly placed inside the hidden container -->
                     <div class="loader"></div>
                     <p>Analyzing your document and generating questions...</p>
                 </section>
@@ -63,7 +70,7 @@
                 </section>
 
                 <section id="results-container" class="hidden">
-                    <h2>Quiz Results 🏆</h2>
+                    <h2>Quiz Results</h2>
                     <p id="score-display">You scored 0 out of 0!</p>
                     <div id="feedback-area"></div>
                     <button id="reset-btn">Try Another PDF</button>

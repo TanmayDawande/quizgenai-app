@@ -13,16 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('score-display');
     const feedbackArea = document.getElementById('feedback-area');
     const resetBtn = document.getElementById('reset-btn');
-    
+
+    // Get the slider elements
     const questionCountSlider = document.getElementById('question-count-slider');
     const sliderValueDisplay = document.getElementById('slider-value');
+    // Get the custom instructions textarea
+    const customInstructionsInput = document.getElementById('custom-instructions');
 
     let quizData = []; // To store the generated quiz questions
 
     // --- Event Listeners ---
 
     // 1. Update slider value display when it's moved
-    if (questionCountSlider) {
+    if (questionCountSlider && sliderValueDisplay) {
         questionCountSlider.addEventListener('input', () => {
             sliderValueDisplay.textContent = questionCountSlider.value;
         });
@@ -55,14 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
         quizContainer.classList.add('hidden');
 
 
-        // --- REAL BACKEND API CALL ---
+        // --- Prepare data for the backend ---
         const formData = new FormData();
         formData.append('pdf', file);
-        formData.append('num_questions', questionCountSlider.value);
+        formData.append('num_questions', questionCountSlider ? questionCountSlider.value : '5');
+        // Append the custom instructions value
+        formData.append('custom_instructions', customInstructionsInput ? customInstructionsInput.value : '');
 
-
+        // --- REAL BACKEND API CALL ---
         try {
-            // Send the file and number of questions to your Django endpoint
             const response = await fetch('/api/generate-quiz/', {
                 method: 'POST',
                 headers: {
@@ -76,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error(data.error || 'Something went wrong on the server.');
             }
-            
-            quizData = data; 
+
+            quizData = data;
             displayQuiz(quizData);
 
             // --- UX: Switch to quiz view ---
@@ -87,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error generating quiz:", error);
             alert(`An error occurred: ${error.message}`);
-            
+
             // Switch back to upload view on error
             loadingContainer.classList.add('hidden');
             uploadContainer.classList.remove('hidden');
@@ -104,61 +108,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 5. When the "Try Another PDF" button is clicked, reset the UI
-    resetBtn.addEventListener('click', () => {
-        resultsContainer.classList.add('hidden');
-        uploadContainer.classList.remove('hidden');
-        pdfInput.value = '';
-        fileNameDisplay.textContent = 'No file selected';
-        generateBtn.disabled = true;
-        quizForm.innerHTML = '';
-        feedbackArea.innerHTML = '';
-        quizData = [];
-    });
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            uploadContainer.classList.remove('hidden');
+            pdfInput.value = '';
+            fileNameDisplay.textContent = 'No file selected';
+            generateBtn.disabled = true;
+            quizForm.innerHTML = '';
+            feedbackArea.innerHTML = '';
+            if (questionCountSlider) questionCountSlider.value = 5;
+            if (sliderValueDisplay) sliderValueDisplay.textContent = '5';
+            if (customInstructionsInput) customInstructionsInput.value = ''; // Clear instructions
+            quizData = [];
+        });
+    }
 
 
     // --- Helper Functions ---
 
     function displayQuiz(questions) {
+        if (!questions || !Array.isArray(questions)) return;
+
         quizForm.innerHTML = '';
         questions.forEach((q, index) => {
             const questionBlock = document.createElement('div');
             questionBlock.classList.add('question-block');
-            
+
             const questionText = document.createElement('p');
             questionText.classList.add('question-text');
             questionText.textContent = `${index + 1}. ${q.question}`;
-            
+
             const optionsList = document.createElement('ul');
             optionsList.classList.add('options-list');
-            
-            q.options.forEach((option, optionIndex) => {
-                const optionItem = document.createElement('li');
-                optionItem.classList.add('option');
-                
-                const radioInput = document.createElement('input');
-                radioInput.type = 'radio';
-                radioInput.name = `question-${index}`;
-                radioInput.value = optionIndex;
-                radioInput.id = `q${index}-o${optionIndex}`;
-                radioInput.required = true;
-                
-                const optionLabel = document.createElement('label');
-                optionLabel.textContent = option;
-                optionLabel.htmlFor = `q${index}-o${optionIndex}`;
-                
-                optionItem.appendChild(radioInput);
-                optionItem.appendChild(optionLabel);
 
-                // THIS IS THE NEW CODE BLOCK
-                // Add a click listener to the entire box (the <li>)
-                optionItem.addEventListener('click', () => {
-                    // Programmatically check the radio button inside this box
-                    radioInput.checked = true;
+            if (q.options && Array.isArray(q.options)) {
+                q.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.classList.add('option');
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `question-${index}`;
+                    radioInput.value = optionIndex;
+                    radioInput.id = `q${index}-o${optionIndex}`;
+                    radioInput.required = true;
+
+                    const optionLabel = document.createElement('label');
+                    optionLabel.textContent = option;
+                    optionLabel.htmlFor = `q${index}-o${optionIndex}`;
+
+                    optionItem.appendChild(radioInput);
+                    optionItem.appendChild(optionLabel);
+
+                    optionItem.addEventListener('click', () => {
+                        radioInput.checked = true;
+                    });
+
+                    optionsList.appendChild(optionItem);
                 });
-                
-                optionsList.appendChild(optionItem);
-            });
-            
+            }
+
             questionBlock.appendChild(questionText);
             questionBlock.appendChild(optionsList);
             quizForm.appendChild(questionBlock);
@@ -169,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let score = 0;
         quizData.forEach((q, index) => {
             const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
-            if (selectedOption && parseInt(selectedOption.value) === q.correctAnswer) {
+            if (selectedOption && typeof q.correctAnswer !== 'undefined' && parseInt(selectedOption.value) === q.correctAnswer) {
                 score++;
             }
         });
@@ -194,18 +204,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const correctAnswerIndex = q.correctAnswer;
 
             const resultText = document.createElement('p');
-            if (userAnswerIndex === correctAnswerIndex) {
-                feedbackBlock.classList.add('correct');
-                resultText.textContent = `Your answer: ${q.options[userAnswerIndex]} (Correct)`;
+            if (q.options && Array.isArray(q.options) && typeof correctAnswerIndex !== 'undefined') {
+                if (userAnswerIndex === correctAnswerIndex) {
+                    feedbackBlock.classList.add('correct');
+                    resultText.textContent = `Your answer: ${q.options[userAnswerIndex]} (Correct)`;
+                } else {
+                    feedbackBlock.classList.add('incorrect');
+                    const userAnswerText = userAnswerIndex !== -1 && q.options[userAnswerIndex] ? q.options[userAnswerIndex] : 'No answer';
+                    resultText.textContent = `Your answer: ${userAnswerText} (Incorrect)`;
+
+                    if (q.options[correctAnswerIndex]) {
+                        const correctAnswerDisplay = document.createElement('span');
+                        correctAnswerDisplay.classList.add('correct-answer-text');
+                        correctAnswerDisplay.textContent = `Correct answer: ${q.options[correctAnswerIndex]}`;
+                        resultText.appendChild(correctAnswerDisplay);
+                    }
+                }
             } else {
-                feedbackBlock.classList.add('incorrect');
-                const userAnswerText = userAnswerIndex !== -1 ? q.options[userAnswerIndex] : 'No answer';
-                resultText.textContent = `Your answer: ${userAnswerText} (Incorrect)`;
-                
-                const correctAnswerDisplay = document.createElement('span');
-                correctAnswerDisplay.classList.add('correct-answer-text');
-                correctAnswerDisplay.textContent = `Correct answer: ${q.options[correctAnswerIndex]}`;
-                resultText.appendChild(correctAnswerDisplay);
+                 resultText.textContent = "Could not display feedback for this question.";
             }
             feedbackBlock.appendChild(resultText);
             feedbackArea.appendChild(feedbackBlock);
@@ -218,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
+                const cookie = cookies[i].trim(); // Corrected typo here
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -226,6 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         return cookieValue;
-    }   
+    }
 });
 

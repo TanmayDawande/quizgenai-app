@@ -9,6 +9,16 @@ def index(request):
     """Renders the main quiz generator page."""
     return render(request, 'index.html')
 
+def description(request):
+    """Renders the description page."""
+    # Ensure you have a 'description.html' template in your templates folder
+    try:
+        return render(request, 'description.html')
+    except Exception as e:
+        # Fallback or error handling if description.html doesn't exist
+        print(f"Could not find description.html: {e}")
+        return render(request, 'index.html') # Redirect to index or show an error
+
 def history_view(request):
     """Fetches all saved quizzes and renders the history page."""
     quizzes = Quiz.objects.all().order_by('-created_at')
@@ -29,27 +39,36 @@ def quiz_retake_view(request, quiz_id):
 
 def generate_quiz_view(request):
     """
-    Handles the API request to generate a quiz and saves it.
+    Handles the API request to generate a quiz, saves it,
+    and accepts custom instructions.
     """
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-        
+
     pdf_file = request.FILES.get('pdf')
-    num_questions = request.POST.get('num_questions', 5)
+    num_questions = request.POST.get('num_questions', 5) # Default to 5 questions
+    # Get custom instructions from POST data (default to empty string)
+    custom_instructions = request.POST.get('custom_instructions', '')
 
     if not pdf_file:
         return JsonResponse({'error': 'No PDF file provided'}, status=400)
 
     try:
-        quiz_data = services.generate_quiz_from_pdf(pdf_file, num_questions)
-        
+        # Pass the instructions to the service function
+        quiz_data = services.generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions)
+
+        # Save the quiz to the database
         Quiz.objects.create(
             title=pdf_file.name,
             quiz_data=quiz_data
         )
-        
+
+        # Send the generated quiz back to the frontend
         return JsonResponse(quiz_data, safe=False)
-        
+
     except Exception as e:
+        # Log the error for debugging on the server
+        print(f"Error in generate_quiz_view: {e}")
+        # Return a generic error message to the frontend
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
 
