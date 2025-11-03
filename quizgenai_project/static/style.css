@@ -25,15 +25,12 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
-    height: 100vh;
-
+    min-height: 100vh;
 }
 
 .page-wrapper {
     display: flex;
     width: 100%;
-    height: 100%;
-
 }
 
 /* --- Sidebar --- */
@@ -95,9 +92,9 @@ body {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    padding: 0 40px;
     align-items: center;
-    min-height: 100vh;
+    padding: 40px;
+    overflow-y: auto;
 }
 
 /* --- Main Content Container (The Card) --- */
@@ -109,9 +106,6 @@ body {
     width: 100%;
     max-width: 600px; /* Reduced width slightly */
     text-align: center;
-    margin-bottom: 40px;
-    margin-top: 40px;
-
 }
 
 header {
@@ -190,7 +184,7 @@ p {
     border: 1px solid var(--border-color);
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
-    resize: none;
+    resize: vertical;
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 80px;
