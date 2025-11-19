@@ -20,7 +20,6 @@ A web app that generates quizzes from PDFs using AI. Upload a PDF, pick how many
 
 ### Requirements
 - Python 3.8+
-- pip
 
 ### Installation
 
