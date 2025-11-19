@@ -11,6 +11,66 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        .page-wrapper {
+            height: 100%;
+        }
+        .main-content-area {
+            overflow: hidden;
+            padding: 20px;
+        }
+        .container {
+            max-height: 100vh;
+            overflow-y: auto;
+            padding: 35px;
+            max-width: 700px;
+        }
+        header {
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        p {
+            font-size: 1rem;
+        }
+        .upload-area {
+            margin: 20px 0;
+            padding: 40px;
+        }
+        .custom-instructions-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .custom-instructions-container label {
+            font-size: 0.95rem;
+        }
+        #custom-instructions {
+            min-height: 80px;
+            font-size: 0.9rem;
+        }
+        .question-count-container {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .question-count-container label {
+            font-size: 1rem;
+        }
+        #generate-btn {
+            margin-top: 20px;
+            padding: 14px 30px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
 
@@ -26,8 +86,20 @@
                 <ul>
                     <li class="active"><a href="/">New Quiz</a></li>
                     <li><a href="/history/">History</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/settings/">Settings</a></li>
+                    {% endif %}
                 </ul>
             </nav>
+            <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border-color);">
+                {% if user.is_authenticated %}
+                    <p style="font-size: 0.85rem; color: var(--subtle-text-color); margin-bottom: 10px;">Logged in as:<br><strong style="color: var(--text-color);">{{ user.username }}</strong></p>
+                    <a href="/logout/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Logout</a>
+                {% else %}
+                    <a href="/login/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 8px;">Sign In</a>
+                    <a href="/signup/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                {% endif %}
+            </div>
         </aside>
         <div class="main-content-area">
             <main class="container">
@@ -65,8 +137,7 @@
                     <div class="loader"></div>
                     <p>Analyzing your document and generating questions...</p>
                     <div class="countdown">
-                        <span id="countdown-timer">60</span>
-                        <span class="countdown-label">seconds</span>
+                        <span id="countdown-timer">01:00</span>
                     </div>
                 </section>
 

@@ -91,8 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let secondsRemaining = countdownSeconds;
         const countdownTimer = document.getElementById('countdown-timer');
         
+        const formatTime = (totalSeconds) => {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        };
+        
         if (countdownTimer) {
-            countdownTimer.textContent = secondsRemaining;
+            countdownTimer.textContent = formatTime(secondsRemaining);
         }
         
         if (countdownInterval) {
@@ -102,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownInterval = setInterval(() => {
             secondsRemaining--;
             if (countdownTimer) {
-                countdownTimer.textContent = secondsRemaining;
+                countdownTimer.textContent = formatTime(secondsRemaining);
             }
             
             if (secondsRemaining <= 0) {
@@ -154,16 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData = data;
             displayQuiz(quizData);
 
-            const waitForCountdown = setInterval(() => {
-                if (secondsRemaining <= 0) {
-                    clearInterval(waitForCountdown);
-                    if (countdownInterval) {
-                        clearInterval(countdownInterval);
-                    }
-                    loadingContainer.classList.add('hidden');
-                    quizContainer.classList.remove('hidden');
-                }
-            }, 100);
+            // Hide loading container and show quiz immediately when data loads
+            clearInterval(countdownInterval);
+            loadingContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
 
         } catch (error) {
             console.error("Error generating quiz:", error);

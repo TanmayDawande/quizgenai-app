@@ -12,6 +12,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        .auth-message {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center !important;
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
     <button id="theme-toggle" class="theme-toggle-fixed" title="Toggle dark mode">
@@ -32,14 +44,26 @@
     <div class="page-wrapper">
         <aside id="sidebar">
             <div class="sidebar-header">
-                <h2>QuizGenAi</h2>
+                <h2><a href="/">QuizGenAi</a></h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="/">New Quiz</a></li>
                     <li class="active"><a href="/history/">History</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/settings/">Settings</a></li>
+                    {% endif %}
                 </ul>
             </nav>
+            <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border-color);">
+                {% if user.is_authenticated %}
+                    <p style="font-size: 0.85rem; color: var(--subtle-text-color); margin-bottom: 10px;">Logged in as:<br><strong style="color: var(--text-color);">{{ user.username }}</strong></p>
+                    <a href="/logout/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Logout</a>
+                {% else %}
+                    <a href="/login/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 8px;">Sign In</a>
+                    <a href="/signup/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                {% endif %}
+            </div>
         </aside>
 
         <div class="main-content-area">
@@ -47,6 +71,17 @@
                 <header>
                     <h1>Quiz History</h1>
                 </header>
+
+                {% if not user.is_authenticated %}
+                    <div class="auth-message">
+                        <p style="font-size: 1rem; color: var(--text-color); margin-bottom: 12px;"><strong>Unlock Your Personal Quiz History</strong></p>
+                        <p style="font-size: 0.9rem; color: var(--subtle-text-color); margin-bottom: 15px;">Sign in to save your quiz history and access your generated quizzes from any device.</p>
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <a href="/login/" style="padding: 10px 20px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign In</a>
+                            <a href="/signup/" style="padding: 10px 20px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="history-list">
                     {% if quizzes %}
@@ -69,7 +104,11 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p>You haven't generated any quizzes yet.</p>
+                        {% if user.is_authenticated %}
+                            <p>You haven't generated any quizzes yet.</p>
+                        {% else %}
+                            <p>No temporary quizzes available. <a href="/login/" style="color: var(--primary-color); font-weight: 500;">Sign in</a> to view your saved quizzes or generate new ones!</p>
+                        {% endif %}
                     {% endif %}
 
                     {% if error %}

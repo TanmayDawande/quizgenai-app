@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
 
 class Quiz(models.Model):
@@ -7,6 +8,9 @@ class Quiz(models.Model):
     """
     # A unique ID for each quiz, useful for URLs.
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    # The user who created the quiz
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     
     # The title of the quiz, which can be the PDF filename.
     title = models.CharField(max_length=255)
