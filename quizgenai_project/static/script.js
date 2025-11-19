@@ -1,5 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Get references to all the necessary DOM elements
+    const themeToggle = document.getElementById('theme-toggle');
+    const toggleIcon = document.querySelector('.toggle-icon');
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (toggleIcon) toggleIcon.textContent = '☀️';
+    } else {
+        if (toggleIcon) toggleIcon.textContent = '🌙';
+    }
+    
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (toggleIcon) {
+                toggleIcon.textContent = isDark ? '☀️' : '🌙';
+            }
+        });
+    }
+
     const uploadContainer = document.getElementById('upload-container');
     const loadingContainer = document.getElementById('loading-container');
     const quizContainer = document.getElementById('quiz-container');
@@ -14,24 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackArea = document.getElementById('feedback-area');
     const resetBtn = document.getElementById('reset-btn');
 
-    // Get the slider elements
     const questionCountSlider = document.getElementById('question-count-slider');
     const sliderValueDisplay = document.getElementById('slider-value');
-    // Get the custom instructions textarea
     const customInstructionsInput = document.getElementById('custom-instructions');
 
-    let quizData = []; // To store the generated quiz questions
+    let quizData = [];
+    let countdownInterval = null;
 
-    // --- Event Listeners ---
-
-    // 1. Update slider value display when it's moved
     if (questionCountSlider && sliderValueDisplay) {
         questionCountSlider.addEventListener('input', () => {
             sliderValueDisplay.textContent = questionCountSlider.value;
         });
     }
 
-    // 2. When a file is selected, update the file name display
     pdfInput.addEventListener('change', () => {
         if (pdfInput.files.length > 0) {
             const fileName = pdfInput.files[0].name;
@@ -43,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. When the "Generate Quiz" button is clicked, call the backend
     generateBtn.addEventListener('click', async () => {
         const file = pdfInput.files[0];
         if (!file) {
@@ -51,21 +66,55 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- UX: Switch to loading view ---
+        const numQuestions = parseInt(questionCountSlider ? questionCountSlider.value : '5');
+        const fileSizeMB = file.size / (1024 * 1024);
+        
+        let estimatedMin = 15;
+        let estimatedMax = 25;
+        
+        estimatedMin += Math.ceil(fileSizeMB * 5);
+        estimatedMax += Math.ceil(fileSizeMB * 8);
+        
+        estimatedMin += (numQuestions * 3);
+        estimatedMax += (numQuestions * 5);
+        
+        estimatedMin = Math.min(estimatedMin, 180);
+        estimatedMax = Math.min(estimatedMax, 180);
+        
+        const countdownSeconds = Math.ceil((estimatedMin + estimatedMax) / 2);
+        
         uploadContainer.classList.add('hidden');
         loadingContainer.classList.remove('hidden');
         resultsContainer.classList.add('hidden');
         quizContainer.classList.add('hidden');
 
+        let secondsRemaining = countdownSeconds;
+        const countdownTimer = document.getElementById('countdown-timer');
+        
+        if (countdownTimer) {
+            countdownTimer.textContent = secondsRemaining;
+        }
+        
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        
+        countdownInterval = setInterval(() => {
+            secondsRemaining--;
+            if (countdownTimer) {
+                countdownTimer.textContent = secondsRemaining;
+            }
+            
+            if (secondsRemaining <= 0) {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
 
-        // --- Prepare data for the backend ---
         const formData = new FormData();
         formData.append('pdf', file);
-        formData.append('num_questions', questionCountSlider ? questionCountSlider.value : '5');
-        // Append the custom instructions value
+        formData.append('num_questions', numQuestions);
         formData.append('custom_instructions', customInstructionsInput ? customInstructionsInput.value : '');
 
-        // --- REAL BACKEND API CALL ---
         try {
             const response = await fetch('/api/generate-quiz/', {
                 method: 'POST',
@@ -75,30 +124,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData,
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.error || 'Something went wrong on the server.');
+                const contentType = response.headers.get('content-type');
+                let errorMessage = 'Something went wrong on the server.';
+                
+                try {
+                    if (contentType && contentType.includes('application/json')) {
+                        const data = await response.json();
+                        errorMessage = data.error || errorMessage;
+                    } else {
+                        const text = await response.text();
+                        if (text.includes('error')) {
+                            errorMessage = text.substring(0, 200);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error parsing error response:", e);
+                }
+                
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            
+            if (!Array.isArray(data)) {
+                throw new Error('Invalid quiz data format received from server');
             }
 
             quizData = data;
             displayQuiz(quizData);
 
-            // --- UX: Switch to quiz view ---
-            loadingContainer.classList.add('hidden');
-            quizContainer.classList.remove('hidden');
+            const waitForCountdown = setInterval(() => {
+                if (secondsRemaining <= 0) {
+                    clearInterval(waitForCountdown);
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                    }
+                    loadingContainer.classList.add('hidden');
+                    quizContainer.classList.remove('hidden');
+                }
+            }, 100);
 
         } catch (error) {
             console.error("Error generating quiz:", error);
             alert(`An error occurred: ${error.message}`);
 
-            // Switch back to upload view on error
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
             loadingContainer.classList.add('hidden');
             uploadContainer.classList.remove('hidden');
         }
     });
 
-    // 4. When the quiz form is submitted, calculate and display score
     quizForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const score = calculateScore();
@@ -107,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.classList.remove('hidden');
     });
 
-    // 5. When the "Try Another PDF" button is clicked, reset the UI
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
             resultsContainer.classList.add('hidden');
@@ -119,13 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackArea.innerHTML = '';
             if (questionCountSlider) questionCountSlider.value = 5;
             if (sliderValueDisplay) sliderValueDisplay.textContent = '5';
-            if (customInstructionsInput) customInstructionsInput.value = ''; // Clear instructions
+            if (customInstructionsInput) customInstructionsInput.value = '';
             quizData = [];
         });
     }
-
-
-    // --- Helper Functions ---
 
     function displayQuiz(questions) {
         if (!questions || !Array.isArray(questions)) return;
@@ -228,13 +302,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Helper function required for Django POST requests
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim(); // Corrected typo here
+                const cookie = cookies[i].trim();
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;

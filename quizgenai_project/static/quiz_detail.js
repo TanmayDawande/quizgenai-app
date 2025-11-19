@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Get the containers
     const quizContainer = document.getElementById('quiz-container');
     const resultsContainer = document.getElementById('results-container');
     const quizForm = document.getElementById('quiz-form');
     const scoreDisplay = document.getElementById('score-display');
     const feedbackArea = document.getElementById('feedback-area');
 
-    // Get the quiz data that was passed from Django
     const quizDataElement = document.getElementById('quiz-data');
     const quizData = JSON.parse(quizDataElement.textContent);
 
-    // --- Main Functions ---
-    
     displayQuiz(quizData);
 
     quizForm.addEventListener('submit', (event) => {
@@ -21,9 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         quizContainer.classList.add('hidden');
         resultsContainer.classList.remove('hidden');
     });
-
-
-    // --- Helper Functions ---
 
     function displayQuiz(questions) {
         if (!questions || !Array.isArray(questions)) return;
@@ -58,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 optionItem.appendChild(optionLabel);
                 optionsList.appendChild(optionItem);
 
-                // Make the whole box clickable
                 optionItem.addEventListener('click', () => {
                     radioInput.checked = true;
                 });

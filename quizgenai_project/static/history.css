@@ -4,7 +4,7 @@
 }
 
 .history-item {
-    background-color: #fafbff; /* A slightly off-white for the card */
+    background-color: var(--primary-light);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: 24px;
@@ -12,12 +12,25 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    transition: box-shadow 0.2s ease;
+}
+
+body.dark-mode .history-item {
+    background-color: rgba(28, 28, 30, 0.85);
+}
+
+.history-item:hover {
+    box-shadow: var(--card-shadow);
 }
 
 .quiz-title {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-color);
+    margin: 0 0 8px 0;
+    word-break: break-word;
+    display: block;
+    padding: 4px 0;
 }
 
 .quiz-date {
@@ -28,8 +41,8 @@
 /* --- Button Group Styling --- */
 .button-group {
     display: flex;
-    flex-wrap: wrap; /* Allows buttons to stack on small screens */
-    gap: 16px; /* Adds space between the buttons */
+    flex-wrap: wrap;
+    gap: 12px;
     margin-top: 20px;
 }
 
@@ -43,35 +56,34 @@
     cursor: pointer;
     text-decoration: none;
     text-align: center;
-    transition: background-color 0.2s, transform 0.2s;
-    flex-grow: 1; /* Allows buttons to share space */
+    transition: all 0.2s ease;
+    flex: 1;
+    border: none;
 }
 
 /* Styles for the main action button (Retake Quiz) */
 .primary-btn {
-    background-color: var(--container-bg);
-    color: var(--subtle-text-color);
-    border: 1px solid var(--border-color);
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .primary-btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-hover);
+    background-color: #0051D5;
     transform: translateY(-2px);
-    color: var(--container-bg);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
 }
 
 /* Styles for the secondary action button (View Quiz) */
 .secondary-btn {
-    background-color: var(--container-bg);
-    color: var(--subtle-text-color);
-    border: 1px solid var(--border-color);
+    background-color: var(--primary-color);
+    color: white;
+    opacity: 0.8;
 }
 
 .secondary-btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-hover);
+    background-color: #0051D5;
+    opacity: 1;
     transform: translateY(-2px);
-    color: var(--container-bg);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
 }
 
