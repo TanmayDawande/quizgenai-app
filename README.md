@@ -77,14 +77,6 @@ quizgenai_project/
 └── templates/         # HTML files
 ```
 
-## Troubleshooting
-
-**"No PDF file provided"** - Make sure you selected a file before generating
-
-**"API Key Error"** - Check that your API keys are correctly set in `.env`
-
-**Quiz generation is slow** - Larger PDFs take longer. Check your internet connection too
-
 ## Author
 
 Tanmay Dawande - [GitHub](https://github.com/TanmayDawande)
