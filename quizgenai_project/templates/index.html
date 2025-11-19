@@ -15,9 +15,12 @@
 <body>
 
     <div class="page-wrapper">
+        <button id="theme-toggle" class="theme-toggle-fixed" title="Toggle dark mode">
+            <span class="toggle-icon">🌙</span>
+        </button>
         <aside id="sidebar">
             <div class="sidebar-header">
-                <h2></a>QuizGenAi</a></h2>
+                <h2><a href="/">QuizGenAi</a></h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
@@ -50,7 +53,7 @@
                     <!-- The slider -->
                     <div class="question-count-container">
                         <label for="question-count-slider">Number of Questions: <span id="slider-value">5</span></label>
-                        <input type="range" id="question-count-slider" min="1" max="30" value="5">
+                        <input type="range" id="question-count-slider" min="1" max="25" value="5">
                     </div>
 
                     <!-- The button -->
@@ -61,6 +64,10 @@
                 <section id="loading-container" class="hidden">
                     <div class="loader"></div>
                     <p>Analyzing your document and generating questions...</p>
+                    <div class="countdown">
+                        <span id="countdown-timer">60</span>
+                        <span class="countdown-label">seconds</span>
+                    </div>
                 </section>
 
                 <section id="quiz-container" class="hidden">
