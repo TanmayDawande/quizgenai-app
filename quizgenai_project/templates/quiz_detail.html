@@ -37,6 +37,7 @@
                 <ul>
                     <li><a href="/">New Quiz</a></li>
                     <li class="active"><a href="/history/">History</a></li>
+                    <li><a href="/progress/">Progress</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="/settings/">Settings</a></li>
                     {% endif %}
@@ -63,16 +64,29 @@
 
                     <!-- This section now directly displays the quiz questions and answers -->
                     <div id="quiz-display">
-                        {% for question in quiz.quiz_data %}
+                        {% for question, user_answer in questions_with_answers %}
                             <div class="question-block">
                                 <p class="question-text">{{ forloop.counter }}. {{ question.question }}</p>
                                 <ul class="options-list view-only">
                                     {% for option in question.options %}
-                                        <li class="option {% if forloop.counter0 == question.correctAnswer %}correct-answer-display{% endif %}">
+                                        <li class="option 
+                                            {% if forloop.counter0 == question.correctAnswer %}correct-answer-display{% endif %}
+                                            {% if forloop.counter0 == user_answer and user_answer != question.correctAnswer %}user-selected-incorrect{% endif %}
+                                            {% if forloop.counter0 == user_answer and user_answer == question.correctAnswer %}user-selected-display{% endif %}
+                                        ">
                                             {{ option }}
+                                            {% if forloop.counter0 == user_answer %}
+                                                <span style="float: right; font-size: 0.8em; opacity: 0.7;">(Your Answer)</span>
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>
+                                {% if question.explanation %}
+                                    <div class="explanation-text">
+                                        <span class="explanation-label">Explanation</span>
+                                        {{ question.explanation }}
+                                    </div>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>

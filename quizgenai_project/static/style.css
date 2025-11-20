@@ -537,12 +537,60 @@ body.dark-mode .option {
     border-color: var(--primary-color);
 }
 
+/* Custom Radio Button */
 .option input[type="radio"] {
-    margin-right: 15px;
-    accent-color: var(--primary-color);
-    width: 18px;
-    height: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--subtle-text-color);
+    border-radius: 50%;
+    margin-right: 16px;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
+    background-color: transparent;
+}
+
+.option input[type="radio"]:checked {
+    border-color: var(--primary-color);
+    background-color: transparent;
+}
+
+.option input[type="radio"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option input[type="radio"]:checked::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Hover effect for the radio */
+.option:hover input[type="radio"] {
+    border-color: var(--primary-color);
+}
+
+/* Selected Option Container Style */
+.option.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 122, 255, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
+}
+
+body.dark-mode .option.selected {
+    background-color: rgba(10, 132, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* --- Results --- */
@@ -624,5 +672,51 @@ body.dark-mode .correct-answer-text {
 
 body.dark-mode .correct-answer-display {
     background-color: #1F4D2B !important;
+}
+
+/* --- Explanation Text --- */
+.explanation-text {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: rgba(0, 122, 255, 0.1);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+body.dark-mode .explanation-text {
+    background-color: rgba(10, 132, 255, 0.15);
+}
+
+.explanation-label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- User Selected Answers in History View --- */
+.user-selected-display {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(0, 122, 255, 0.1) !important;
+    color: var(--text-color) !important;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--primary-color);
+}
+
+.user-selected-incorrect {
+    border-color: var(--danger-color) !important;
+    background-color: #FEF2F2 !important;
+    color: var(--danger-color) !important;
+    box-shadow: inset 0 0 0 1px var(--danger-color);
+}
+
+body.dark-mode .user-selected-incorrect {
+    background-color: #4D1F1F !important;
 }
 

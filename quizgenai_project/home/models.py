@@ -24,3 +24,17 @@ class Quiz(models.Model):
     def __str__(self):
         """A human-readable representation of the model."""
         return self.title
+
+class QuizAttempt(models.Model):
+    """
+    Represents a user's attempt at a quiz.
+    """
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='attempts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField()
+    # Store answers as a JSON list of indices: [0, 2, 1, -1, ...] (-1 for no answer)
+    user_answers = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.quiz.title} - {self.score}"

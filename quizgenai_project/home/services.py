@@ -33,10 +33,11 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
     1. "question": A string for the question text.
     2. "options": An array of 4 strings representing the possible answers.
     3. "correctAnswer": The 0-based index of the correct answer within the "options" array.
+    4. "explanation": A short explanation (1-2 sentences) of why the correct answer is correct.
 
     Example format:
     [
-      {{"question": "What is the primary topic?", "options": ["A", "B", "C", "D"], "correctAnswer": 2}}
+      {{"question": "What is the primary topic?", "options": ["A", "B", "C", "D"], "correctAnswer": 2, "explanation": "Option C is correct because..."}}
     ]
     IMPORTANT: You must generate questions that test the conceptual and scientific understanding of the topics presented in the text.
     GOOD QUESTIONS are about: chemical principles, scientific concepts, reactions, definitions, properties, and applications (e.g., "What is a thermodynamic function?", "What is the principle of potentiometry?").
@@ -103,6 +104,9 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
                 raise Exception(f"Question {i+1} is missing required fields (question, options, correctAnswer).")
             if not isinstance(question.get("options"), list) or len(question.get("options", [])) != 4:
                 raise Exception(f"Question {i+1} does not have exactly 4 options.")
+            # Explanation is optional for backward compatibility, but we expect it for new quizzes
+            if "explanation" not in question:
+                question["explanation"] = "No explanation provided."
 
     except json.JSONDecodeError as json_err:
         print(f"Failed to decode JSON. Raw response: {response.text}")

@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from . import services
-from .models import Quiz
+from .models import Quiz, QuizAttempt
 import json
 import re
 
@@ -110,9 +110,26 @@ def history_view(request):
 def quiz_detail_view(request, quiz_id):
     if request.user.is_authenticated:
         quiz = get_object_or_404(Quiz, id=quiz_id, user=request.user)
+        # Get the latest attempt for this quiz by this user
+        latest_attempt = QuizAttempt.objects.filter(quiz=quiz, user=request.user).order_by('-timestamp').first()
     else:
         quiz = get_object_or_404(Quiz, id=quiz_id, user__isnull=True)
-    return render(request, 'quiz_detail.html', {'quiz': quiz})
+        latest_attempt = None
+        
+    if latest_attempt:
+        user_answers = latest_attempt.user_answers
+    else:
+        user_answers = [-1] * len(quiz.quiz_data)
+        
+    # Zip questions with user answers
+    questions_with_answers = zip(quiz.quiz_data, user_answers)
+
+    context = {
+        'quiz': quiz,
+        'questions_with_answers': questions_with_answers,
+        'score': latest_attempt.score if latest_attempt else None
+    }
+    return render(request, 'quiz_detail.html', context)
 
 @no_cache
 def quiz_retake_view(request, quiz_id):
@@ -137,13 +154,13 @@ def generate_quiz_view(request):
         quiz_title = pdf_file.name if pdf_file.name else "Untitled Quiz"
         print(f"Saving quiz with title: {quiz_title}")
         
-        Quiz.objects.create(
+        quiz = Quiz.objects.create(
             user=request.user if request.user.is_authenticated else None,
             title=quiz_title,
             quiz_data=quiz_data
         )
 
-        return JsonResponse(quiz_data, safe=False)
+        return JsonResponse({'quiz_id': str(quiz.id), 'questions': quiz_data})
 
     except Exception as e:
         print(f"Error in generate_quiz_view: {e}")
@@ -172,6 +189,39 @@ def update_quiz_title_view(request):
     except Exception as e:
         print(f"Error in update_quiz_title_view: {e}")
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+@require_http_methods(["POST"])
+def save_quiz_attempt(request):
+    try:
+        data = json.loads(request.body)
+        quiz_id = data.get('quiz_id')
+        score = data.get('score')
+        user_answers = data.get('user_answers')
+
+        if not quiz_id or score is None or user_answers is None:
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+        if request.user.is_authenticated:
+            quiz = get_object_or_404(Quiz, id=quiz_id, user=request.user)
+            user = request.user
+        else:
+            # For anonymous users, we might still want to save it if we have the quiz ID
+            # But typically we only save history for logged-in users or if the quiz exists
+            quiz = get_object_or_404(Quiz, id=quiz_id)
+            user = None
+
+        QuizAttempt.objects.create(
+            quiz=quiz,
+            user=user,
+            score=score,
+            user_answers=user_answers
+        )
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        print(f"Error saving quiz attempt: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @login_required(login_url='login')
 @no_cache
@@ -222,4 +272,83 @@ def settings_view(request):
                     context['error_message'] = f'Error updating password: {str(e)}'
     
     return render(request, 'settings.html', context)
+
+@login_required(login_url='login')
+@no_cache
+def progress_view(request):
+    attempts = QuizAttempt.objects.filter(user=request.user).select_related('quiz').order_by('timestamp')
+    
+    total_attempts = attempts.count()
+    
+    if total_attempts == 0:
+        context = {
+            'total_attempts': 0,
+            'average_score': 0,
+            'chart_labels': json.dumps([]),
+            'chart_data': json.dumps([])
+        }
+        return render(request, 'progress.html', context)
+
+    total_percentage = 0
+    total_correct = 0
+    total_questions_all = 0
+    
+    correct_data = []
+    incorrect_data = []
+    chart_labels = []
+    
+    highest_score = 0
+    perfect_quizzes = 0
+
+    for attempt in attempts:
+        # Calculate percentage for this attempt
+        # We need to know the total number of questions in the quiz
+        # quiz_data is a list of questions
+        try:
+            total_questions = len(attempt.quiz.quiz_data)
+            if total_questions > 0:
+                percentage = (attempt.score / total_questions) * 100
+            else:
+                percentage = 0
+            
+            total_correct += attempt.score
+            total_questions_all += total_questions
+            
+            if percentage > highest_score:
+                highest_score = percentage
+            
+            if percentage == 100 and total_questions > 0:
+                perfect_quizzes += 1
+            
+            # Prepare data for stacked bar chart
+            correct_data.append(attempt.score)
+            incorrect_count = total_questions - attempt.score
+            incorrect_data.append(max(0, incorrect_count))
+            
+        except Exception:
+            percentage = 0
+            correct_data.append(0)
+            incorrect_data.append(0)
+        
+        total_percentage += percentage
+        
+        # Format date for chart label (e.g., "Nov 20")
+        chart_labels.append(attempt.timestamp.strftime('%b %d'))
+
+    average_score = round(total_percentage / total_attempts, 1)
+    total_incorrect = total_questions_all - total_correct
+
+    context = {
+        'total_attempts': total_attempts,
+        'average_score': average_score,
+        'chart_labels': json.dumps(chart_labels),
+        'correct_data': json.dumps(correct_data),
+        'incorrect_data': json.dumps(incorrect_data),
+        'total_correct': total_correct,
+        'total_incorrect': total_incorrect,
+        'highest_score': round(highest_score, 1),
+        'perfect_quizzes': perfect_quizzes,
+        'total_questions_all': total_questions_all
+    }
+    return render(request, 'progress.html', context)
 

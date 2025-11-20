@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customInstructionsInput = document.getElementById('custom-instructions');
 
     let quizData = [];
+    let currentQuizId = null;
     let countdownInterval = null;
 
     if (questionCountSlider && sliderValueDisplay) {
@@ -159,9 +160,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorMessage);
             }
 
-            const data = await response.json();
+            const responseData = await response.json();
             
-            if (!Array.isArray(data)) {
+            // Handle both old format (array) and new format (object with quiz_id)
+            let data;
+            if (Array.isArray(responseData)) {
+                data = responseData;
+            } else if (responseData.questions && Array.isArray(responseData.questions)) {
+                data = responseData.questions;
+                currentQuizId = responseData.quiz_id;
+            } else {
                 throw new Error('Invalid quiz data format received from server');
             }
 
@@ -188,12 +196,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    quizForm.addEventListener('submit', (event) => {
+    quizForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const score = calculateScore();
+        const userAnswers = getUserAnswers();
+        
         displayResults(score);
         quizContainer.classList.add('hidden');
         resultsContainer.classList.remove('hidden');
+
+        if (currentQuizId) {
+            try {
+                await fetch('/api/save-attempt/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        quiz_id: currentQuizId,
+                        score: score,
+                        user_answers: userAnswers
+                    }),
+                });
+            } catch (error) {
+                console.error("Error saving quiz attempt:", error);
+            }
+        }
     });
 
     if (resetBtn) {
@@ -252,6 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     optionItem.addEventListener('click', () => {
                         radioInput.checked = true;
+                        
+                        // Visual selection state
+                        const siblings = optionsList.querySelectorAll('.option');
+                        siblings.forEach(sib => sib.classList.remove('selected'));
+                        optionItem.classList.add('selected');
                     });
 
                     optionsList.appendChild(optionItem);
@@ -313,8 +347,34 @@ document.addEventListener('DOMContentLoaded', () => {
                  resultText.textContent = "Could not display feedback for this question.";
             }
             feedbackBlock.appendChild(resultText);
+
+            // Add Explanation if available
+            if (q.explanation) {
+                const explanationDiv = document.createElement('div');
+                explanationDiv.classList.add('explanation-text');
+                
+                const explanationLabel = document.createElement('span');
+                explanationLabel.classList.add('explanation-label');
+                explanationLabel.textContent = 'Explanation';
+                
+                const explanationContent = document.createTextNode(q.explanation);
+                
+                explanationDiv.appendChild(explanationLabel);
+                explanationDiv.appendChild(explanationContent);
+                feedbackBlock.appendChild(explanationDiv);
+            }
+
             feedbackArea.appendChild(feedbackBlock);
         });
+    }
+
+    function getUserAnswers() {
+        const answers = [];
+        quizData.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            answers.push(selectedOption ? parseInt(selectedOption.value) : -1);
+        });
+        return answers;
     }
 
     function getCookie(name) {

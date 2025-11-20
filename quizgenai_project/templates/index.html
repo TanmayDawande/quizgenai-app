@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to MCQ Quiz Generator</title>
     
-    <link rel="stylesheet" href="{% static 'style.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=7">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,6 +93,7 @@
                 <ul>
                     <li class="active"><a href="/">New Quiz</a></li>
                     <li><a href="/history/">History</a></li>
+                    <li><a href="/progress/">Progress</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="/settings/">Settings</a></li>
                     {% endif %}
