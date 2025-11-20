@@ -60,6 +60,12 @@ body {
     flex-direction: column;
     flex-shrink: 0;
     border-right: 1px solid var(--border-color);
+    
+    /* Sticky positioning to keep it in view */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -155,9 +161,8 @@ body.dark-mode .toggle-icon {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; /* Center vertically again */
     padding: 40px;
-    overflow-y: auto;
 }
 
 /* --- Main Content Container (The Card) --- */
@@ -401,7 +406,10 @@ button:disabled {
 #loading-container p {
     font-size: 1.1rem;
     color: var(--subtle-text-color);
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: pulse 2s ease-in-out infinite;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
 }
 
 .countdown {
@@ -410,37 +418,62 @@ button:disabled {
     align-items: center;
     justify-content: center;
     gap: 16px;
-    margin-top: 40px;
+    margin-top: 20px;
+}
+
+.circular-timer {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    overflow: visible; /* Allow glow to spill out */
+}
+
+.timer-circle-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 3;
+    opacity: 0.6;
+}
+
+.timer-circle-fg {
+    fill: none;
+    stroke: var(--primary-color);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 283; /* 2 * PI * 45 */
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 4px rgba(0, 122, 255, 0.3));
 }
 
 #countdown-timer {
-    font-size: 4rem;
-    font-weight: 200;
-    letter-spacing: 4px;
-    color: var(--primary-color);
-    font-family: 'Courier New', monospace;
-    padding: 30px 50px;
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.08), rgba(0, 81, 213, 0.08));
-    border: 2px solid var(--primary-color);
-    border-radius: 20px;
-    animation: timerPulse 1s ease-in-out infinite;
-    box-shadow: 0 8px 32px rgba(0, 122, 255, 0.15);
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+    z-index: 1;
 }
 
-body.dark-mode #countdown-timer {
-    background: linear-gradient(135deg, rgba(10, 132, 255, 0.08), rgba(0, 81, 213, 0.08));
-    border-color: var(--primary-color);
+body.dark-mode .timer-circle-bg {
+    stroke: rgba(255, 255, 255, 0.08);
 }
 
-@keyframes timerPulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.88;
-        transform: scale(1.01);
-    }
+body.dark-mode .timer-circle-fg {
+    filter: drop-shadow(0 0 8px rgba(10, 132, 255, 0.5));
 }
 
 @keyframes pulse {
@@ -448,7 +481,7 @@ body.dark-mode #countdown-timer {
         opacity: 1;
     }
     50% {
-        opacity: 0.7;
+        opacity: 0.6;
     }
 }
 

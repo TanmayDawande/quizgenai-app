@@ -90,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let secondsRemaining = countdownSeconds;
         const countdownTimer = document.getElementById('countdown-timer');
+        const timerCircleFg = document.querySelector('.timer-circle-fg');
+        const totalCircleLength = 283; // 2 * PI * 45
         
         const formatTime = (totalSeconds) => {
             const minutes = Math.floor(totalSeconds / 60);
@@ -97,9 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         };
         
-        if (countdownTimer) {
-            countdownTimer.textContent = formatTime(secondsRemaining);
-        }
+        const updateTimer = () => {
+            if (countdownTimer) {
+                countdownTimer.textContent = formatTime(secondsRemaining);
+            }
+            if (timerCircleFg) {
+                const offset = totalCircleLength - (secondsRemaining / countdownSeconds) * totalCircleLength;
+                timerCircleFg.style.strokeDashoffset = offset;
+            }
+        };
+
+        updateTimer();
         
         if (countdownInterval) {
             clearInterval(countdownInterval);
@@ -107,9 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         countdownInterval = setInterval(() => {
             secondsRemaining--;
-            if (countdownTimer) {
-                countdownTimer.textContent = formatTime(secondsRemaining);
-            }
+            updateTimer();
             
             if (secondsRemaining <= 0) {
                 clearInterval(countdownInterval);
@@ -164,6 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(countdownInterval);
             loadingContainer.classList.add('hidden');
             quizContainer.classList.remove('hidden');
+            
+            // Enable page scrolling for the quiz
+            document.body.classList.add('scrollable');
 
         } catch (error) {
             console.error("Error generating quiz:", error);
@@ -189,6 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.addEventListener('click', () => {
             resultsContainer.classList.add('hidden');
             uploadContainer.classList.remove('hidden');
+            
+            // Disable page scrolling for the main page
+            document.body.classList.remove('scrollable');
+            
             pdfInput.value = '';
             fileNameDisplay.textContent = 'No file selected';
             generateBtn.disabled = true;
