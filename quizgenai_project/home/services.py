@@ -1,6 +1,8 @@
 import fitz
 import google.generativeai as genai
 import json
+import requests
+from bs4 import BeautifulSoup
 from django.conf import settings
 
 try:
@@ -10,20 +12,31 @@ except Exception as e:
     print(f"Error configuring Gemini API in services.py: {e}")
     model = None
 
-def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
+def extract_text_from_url(url):
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Remove script and style elements
+        for script in soup(["script", "style", "nav", "footer", "header", "aside"]):
+            script.decompose()
+            
+        text = soup.get_text(separator=' ', strip=True)
+        return text
+    except Exception as e:
+        print(f"Error extracting text from URL: {e}")
+        raise Exception(f"Could not extract text from the URL: {e}")
+
+def generate_quiz_from_text(text, num_questions, custom_instructions):
     if model is None:
         raise Exception("Gemini API model is not configured.")
 
-    try:
-        pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
-        pdf_text = "".join(page.get_text() for page in pdf_document)
-        pdf_size = len(pdf_text)
-    except Exception as fitz_error:
-        print(f"Error opening or reading PDF: {fitz_error}")
-        raise Exception(f"Could not process the PDF file: {fitz_error}")
-
-    if not pdf_text.strip():
-        raise Exception("Could not extract any meaningful text from the PDF.")
+    if not text.strip():
+        raise Exception("Could not extract any meaningful text.")
 
     prompt_base = f"""
     Based on the following text, create a multiple-choice quiz with {num_questions} questions.
@@ -49,10 +62,16 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
     else:
         prompt_instructions = ""
 
+    # Truncate text if it's too long to avoid token limits (approx 30k chars is safe for Flash)
+    # Gemini 1.5 Flash has a huge context window, but let's be safe and efficient
+    max_chars = 100000 
+    if len(text) > max_chars:
+        text = text[:max_chars] + "...(truncated)"
+
     prompt_text_section = f"""
     Here is the text to analyze:
     ---
-    {pdf_text}
+    {text}
     ---
     """
 
@@ -118,6 +137,21 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
         raise Exception("An error occurred while processing the AI response. Please try again with fewer questions.")
 
     return quiz_data
+
+def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
+    try:
+        pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
+        pdf_text = "".join(page.get_text() for page in pdf_document)
+    except Exception as fitz_error:
+        print(f"Error opening or reading PDF: {fitz_error}")
+        raise Exception(f"Could not process the PDF file: {fitz_error}")
+
+    return generate_quiz_from_text(pdf_text, num_questions, custom_instructions)
+
+def generate_quiz_from_url(url, num_questions, custom_instructions):
+    text = extract_text_from_url(url)
+    return generate_quiz_from_text(text, num_questions, custom_instructions)
+
 
 def estimate_generation_time(pdf_text_length, num_questions):
     base_min = 15

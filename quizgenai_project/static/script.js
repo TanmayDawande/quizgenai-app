@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('results-container');
 
     const pdfInput = document.getElementById('pdf-input');
+    const urlInput = document.getElementById('url-input');
     const fileNameDisplay = document.getElementById('file-name-display');
     const generateBtn = document.getElementById('generate-btn');
 
@@ -42,6 +43,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let quizData = [];
     let currentQuizId = null;
     let countdownInterval = null;
+    let activeTab = 'pdf-tab';
+
+    // Tab Handling
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+            activeTab = tabId;
+            
+            checkGenerateButtonState();
+        });
+    });
+
+    function checkGenerateButtonState() {
+        if (activeTab === 'pdf-tab') {
+            generateBtn.disabled = !(pdfInput.files.length > 0);
+        } else {
+            generateBtn.disabled = !(urlInput && urlInput.value.trim().length > 0);
+        }
+    }
 
     if (questionCountSlider && sliderValueDisplay) {
         questionCountSlider.addEventListener('input', () => {
@@ -53,28 +83,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pdfInput.files.length > 0) {
             const fileName = pdfInput.files[0].name;
             fileNameDisplay.textContent = fileName;
-            generateBtn.disabled = false;
         } else {
             fileNameDisplay.textContent = 'No file selected';
-            generateBtn.disabled = true;
         }
+        checkGenerateButtonState();
     });
 
-    generateBtn.addEventListener('click', async () => {
-        const file = pdfInput.files[0];
-        if (!file) {
-            alert("Please select a PDF file first.");
-            return;
-        }
+    if (urlInput) {
+        urlInput.addEventListener('input', checkGenerateButtonState);
+    }
 
+    generateBtn.addEventListener('click', async () => {
         const numQuestions = parseInt(questionCountSlider ? questionCountSlider.value : '5');
-        const fileSizeMB = file.size / (1024 * 1024);
+        const formData = new FormData();
         
         let estimatedMin = 15;
         let estimatedMax = 25;
-        
-        estimatedMin += Math.ceil(fileSizeMB * 5);
-        estimatedMax += Math.ceil(fileSizeMB * 8);
+
+        if (activeTab === 'pdf-tab') {
+            const file = pdfInput.files[0];
+            if (!file) {
+                alert("Please select a PDF file first.");
+                return;
+            }
+            formData.append('pdf', file);
+            
+            const fileSizeMB = file.size / (1024 * 1024);
+            estimatedMin += Math.ceil(fileSizeMB * 5);
+            estimatedMax += Math.ceil(fileSizeMB * 8);
+        } else {
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert("Please enter a URL first.");
+                return;
+            }
+            formData.append('url', url);
+            // Estimate for URL (assume average page size)
+            estimatedMin += 5;
+            estimatedMax += 10;
+        }
         
         estimatedMin += (numQuestions * 3);
         estimatedMax += (numQuestions * 5);
@@ -93,6 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const countdownTimer = document.getElementById('countdown-timer');
         const timerCircleFg = document.querySelector('.timer-circle-fg');
         const totalCircleLength = 283; // 2 * PI * 45
+        
+        // Reset transition for new run
+        if (timerCircleFg) {
+             timerCircleFg.style.transition = 'stroke-dashoffset 1s linear';
+        }
         
         const formatTime = (totalSeconds) => {
             const minutes = Math.floor(totalSeconds / 60);
@@ -125,8 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 1000);
 
-        const formData = new FormData();
-        formData.append('pdf', file);
         formData.append('num_questions', numQuestions);
         formData.append('custom_instructions', customInstructionsInput ? customInstructionsInput.value : '');
 
@@ -176,13 +226,21 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData = data;
             displayQuiz(quizData);
 
-            // Hide loading container and show quiz immediately when data loads
+            // Finish the timer visually before showing the quiz
             clearInterval(countdownInterval);
-            loadingContainer.classList.add('hidden');
-            quizContainer.classList.remove('hidden');
-            
-            // Enable page scrolling for the quiz
-            document.body.classList.add('scrollable');
+            if (countdownTimer) countdownTimer.textContent = "00:00";
+            if (timerCircleFg) {
+                // Animate to full completion
+                timerCircleFg.style.transition = "stroke-dashoffset 0.5s ease-out";
+                timerCircleFg.style.strokeDashoffset = totalCircleLength;
+            }
+
+            // Short delay to show the "completed" state
+            setTimeout(() => {
+                loadingContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                document.body.classList.add('scrollable');
+            }, 800);
 
         } catch (error) {
             console.error("Error generating quiz:", error);
@@ -234,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('scrollable');
             
             pdfInput.value = '';
+            if (urlInput) urlInput.value = '';
             fileNameDisplay.textContent = 'No file selected';
             generateBtn.disabled = true;
             quizForm.innerHTML = '';
