@@ -103,6 +103,14 @@
                                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                             </svg>
                                         </button>
+                                        <button class="delete-quiz-btn" onclick="deleteQuiz('{{ quiz.id }}')" title="Delete Quiz">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                                 <p class="quiz-date">Created on: {{ quiz.created_at|date:"F j, Y, g:i a" }}</p>
@@ -228,6 +236,48 @@
                 }
             }
             return cookieValue;
+        }
+
+        function deleteQuiz(quizId) {
+            if (!confirm("Are you sure you want to delete this quiz? This action cannot be undone.")) {
+                return;
+            }
+            
+            fetch('/api/delete-quiz/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ quiz_id: quizId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the element from the DOM with a fade out effect
+                    const container = document.getElementById(`container-${quizId}`);
+                    const item = container.closest('.history-item');
+                    
+                    item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.95)';
+                    
+                    setTimeout(() => {
+                        item.remove();
+                        // Check if list is empty
+                        const list = document.querySelector('.history-list');
+                        if (list.children.length === 0) {
+                            location.reload(); // Reload to show empty state message
+                        }
+                    }, 300);
+                } else {
+                    alert('Error deleting quiz: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the quiz');
+            });
         }
     </script>
 </body>

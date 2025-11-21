@@ -85,6 +85,31 @@ body.dark-mode .history-item {
     box-shadow: none !important;
 }
 
+.delete-quiz-btn {
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 8px !important;
+    border-radius: 50%;
+    color: var(--subtle-text-color) !important;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    width: auto !important;
+    height: auto !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    min-width: auto !important; /* Override any min-width */
+}
+
+.delete-quiz-btn:hover {
+    color: var(--danger-color) !important;
+    background-color: rgba(255, 59, 48, 0.1) !important;
+    opacity: 1;
+}
+
 .title-input {
     font-size: 1.2rem;
     font-weight: 600;

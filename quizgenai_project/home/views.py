@@ -237,6 +237,28 @@ def save_quiz_attempt(request):
         print(f"Error saving quiz attempt: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
+@require_http_methods(["POST"])
+def delete_quiz_view(request):
+    try:
+        data = json.loads(request.body)
+        quiz_id = data.get('quiz_id')
+
+        if not quiz_id:
+            return JsonResponse({'error': 'Missing quiz_id'}, status=400)
+
+        if request.user.is_authenticated:
+            quiz = get_object_or_404(Quiz, id=quiz_id, user=request.user)
+        else:
+            quiz = get_object_or_404(Quiz, id=quiz_id, user__isnull=True)
+        
+        quiz.delete()
+
+        return JsonResponse({'success': True, 'message': 'Quiz deleted successfully'})
+
+    except Exception as e:
+        print(f"Error in delete_quiz_view: {e}")
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
 @login_required(login_url='login')
 @no_cache
 def settings_view(request):
