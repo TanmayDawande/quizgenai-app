@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # Security: Change 'secure-admin/' to a secret path only you know
+    path('tanmay-secure-admin/', admin.site.urls),
     path('', include('home.urls'))
 ]

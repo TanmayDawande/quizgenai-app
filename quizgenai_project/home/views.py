@@ -13,7 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.enums import TA_CENTER
 from io import BytesIO
 
 def no_cache(view_func):
@@ -36,12 +36,14 @@ def signup_view(request):
         return redirect('home')
     
     if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
         password_confirm = request.POST.get('password_confirm', '')
         
-        if not username or not email or not password:
+        if not first_name or not last_name or not username or not email or not password:
             return render(request, 'signup.html', {'error': 'All fields are required'})
         
         if not is_valid_email(email):
@@ -57,7 +59,7 @@ def signup_view(request):
             return render(request, 'signup.html', {'error': 'Email already exists'})
         
         try:
-            user = User.objects.create_user(username=username, email=email, password=password)
+            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
             login(request, user)
             return redirect('home')
         except Exception as e:
