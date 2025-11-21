@@ -414,12 +414,12 @@ body.dark-mode .upload-area {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .upload-label:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .file-name {
