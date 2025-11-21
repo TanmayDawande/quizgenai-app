@@ -176,6 +176,7 @@
                     <div class="input-tabs">
                         <button class="tab-btn active" data-tab="pdf-tab">Upload PDF</button>
                         <button class="tab-btn" data-tab="url-tab">Enter URL</button>
+                        <button class="tab-btn" data-tab="yt-tab">YouTube Video</button>
                     </div>
 
                     <div id="pdf-tab" class="tab-content active">
@@ -191,6 +192,13 @@
                     <div id="url-tab" class="tab-content">
                         <div class="url-input-container">
                             <input type="url" id="url-input" class="url-input" placeholder="https://example.com/article">
+                        </div>
+                    </div>
+
+                    <div id="yt-tab" class="tab-content">
+                        <div class="url-input-container">
+                            <input type="url" id="yt-input" class="url-input" placeholder="https://www.youtube.com/watch?v=...">
+                            <p style="font-size: 0.8rem; color: var(--subtle-text-color); margin-top: 8px;">Note: The video must have captions/transcripts enabled.</p>
                         </div>
                     </div>
 

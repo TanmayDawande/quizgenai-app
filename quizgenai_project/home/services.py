@@ -4,6 +4,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
+from youtube_transcript_api import YouTubeTranscriptApi
+from urllib.parse import urlparse, parse_qs
 
 try:
     genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -14,6 +16,11 @@ except Exception as e:
 
 def extract_text_from_url(url):
     try:
+        # Check if it's a YouTube URL
+        parsed_url = urlparse(url)
+        if parsed_url.netloc in ['www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be']:
+            return extract_text_from_youtube(url)
+
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
@@ -30,6 +37,42 @@ def extract_text_from_url(url):
     except Exception as e:
         print(f"Error extracting text from URL: {e}")
         raise Exception(f"Could not extract text from the URL: {e}")
+
+def extract_text_from_youtube(url):
+    try:
+        video_id = None
+        parsed_url = urlparse(url)
+        
+        if parsed_url.netloc == 'youtu.be':
+            video_id = parsed_url.path[1:]
+        elif parsed_url.netloc in ['www.youtube.com', 'youtube.com', 'm.youtube.com']:
+            if parsed_url.path == '/watch':
+                query_params = parse_qs(parsed_url.query)
+                video_id = query_params.get('v', [None])[0]
+            elif parsed_url.path.startswith('/embed/'):
+                video_id = parsed_url.path.split('/')[2]
+            elif parsed_url.path.startswith('/v/'):
+                video_id = parsed_url.path.split('/')[2]
+
+        if not video_id:
+            raise Exception("Could not extract video ID from YouTube URL")
+
+        # Instantiate the API and fetch the transcript
+        transcript_list = YouTubeTranscriptApi().fetch(video_id)
+        
+        # Combine transcript text
+        full_transcript = " ".join([item.text for item in transcript_list])
+        return f"Transcript of YouTube Video ({url}):\n{full_transcript}"
+        
+    except Exception as e:
+        print(f"Error extracting YouTube transcript: {e}")
+        # Fallback or specific error message
+        if "TranscriptsDisabled" in str(e):
+             raise Exception("Transcripts are disabled for this video.")
+        elif "NoTranscriptFound" in str(e):
+             raise Exception("No transcript found for this video.")
+        else:
+             raise Exception(f"Could not fetch YouTube transcript: {e}")
 
 def generate_quiz_from_text(text, num_questions, custom_instructions):
     if model is None:
