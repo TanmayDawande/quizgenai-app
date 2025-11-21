@@ -38,6 +38,100 @@ body.dark-mode .history-item {
     color: var(--subtle-text-color);
 }
 
+/* --- Quiz Header & Edit Title --- */
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.quiz-title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.quiz-title {
+    margin: 0; /* Override previous margin */
+    flex-grow: 1;
+}
+
+.edit-title-btn {
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 8px !important;
+    border-radius: 50%;
+    color: var(--subtle-text-color) !important;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    width: auto !important;
+    height: auto !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    min-width: auto !important; /* Override any min-width */
+}
+
+.edit-title-btn:hover {
+    color: var(--primary-color) !important;
+    background-color: rgba(0, 122, 255, 0.1) !important;
+    opacity: 1;
+    transform: none !important; /* Prevent scale effect if unwanted */
+    box-shadow: none !important;
+}
+
+.title-input {
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 4px 8px;
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    width: 100%;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.save-btn, .cancel-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.save-btn {
+    color: #34c759; /* Apple Green */
+}
+
+.save-btn:hover {
+    background-color: rgba(52, 199, 89, 0.1);
+}
+
+.cancel-btn {
+    color: #ff3b30; /* Apple Red */
+}
+
+.cancel-btn:hover {
+    background-color: rgba(255, 59, 48, 0.1);
+}
+
 /* --- Button Group Styling --- */
 .button-group {
     display: flex;
