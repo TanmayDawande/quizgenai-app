@@ -8,6 +8,7 @@
     
     <link rel="icon" href="{% static 'logo-white.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'index.css' %}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +94,7 @@
                     <div id="yt-tab" class="tab-content">
                         <div class="url-input-container">
                             <input type="url" id="yt-input" class="url-input" placeholder="https://www.youtube.com/watch?v=...">
-                            <p style="font-size: 0.8rem; color: var(--subtle-text-color); margin-top: 8px;">Note: The video must have captions/transcripts enabled.</p>
+                            <p class="yt-note">Note: The video must have captions/transcripts enabled.</p>
                         </div>
                     </div>
 
@@ -137,10 +138,10 @@
                     <h2>Quiz Results</h2>
                     <p id="score-display">You scored 0 out of 0!</p>
                     <div id="feedback-area"></div>
-                    <div id="results-actions" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                        <button id="reset-btn" style="width: auto; margin: 0;">Try Another PDF</button>
-                        <a id="download-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; text-decoration: none; display: none;">Download PDF</a>
-                        <a id="flashcards-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; text-decoration: none; display: none;">Flashcards</a>
+                    <div id="results-actions" class="results-actions">
+                        <button id="reset-btn" class="action-btn">Try Another PDF</button>
+                        <a id="download-btn" href="#" class="submit-btn download-btn">Download PDF</a>
+                        <a id="flashcards-btn" href="#" class="submit-btn flashcards-btn">Flashcards</a>
                     </div>
                 </section>
             </main>

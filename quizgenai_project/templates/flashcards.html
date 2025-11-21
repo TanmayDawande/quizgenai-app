@@ -7,6 +7,7 @@
     <title>Flashcards - {{ quiz.title }}</title>
     
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'flashcards.css' %}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,8 +57,8 @@
         </aside>
 
         <div class="main-content-area">
-            <main class="container animate-fade-in" style="max-width: 800px;">
-                <header style="text-align: center; margin-bottom: 20px;">
+            <main class="container animate-fade-in">
+                <header>
                     <h1>{{ quiz.title }}</h1>
                     <p>Flashcard Mode</p>
                 </header>
@@ -84,8 +85,8 @@
                     <button class="control-btn" id="next-btn">Next →</button>
                 </div>
                 
-                <div style="text-align: center; margin-top: 40px;">
-                    <a href="{% url 'quiz_detail' quiz.id %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Back to Quiz Details</a>
+                <div class="back-link-container">
+                    <a href="{% url 'quiz_detail' quiz.id %}" class="back-link">Back to Quiz Details</a>
                 </div>
             </main>
         </div>

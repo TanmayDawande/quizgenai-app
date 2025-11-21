@@ -197,3 +197,26 @@ body.dark-mode .history-item {
     color: var(--text-color);
 }
 
+/* Fix for buttons stacking in history view */
+.button-group .primary-btn, .button-group .secondary-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    width: auto; /* Override the global width: 100% */
+    min-width: 120px; /* Ensure they don't get too small */
+}
+
+.button-group .secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    box-shadow: none;
+}
+
+.button-group .secondary-btn:hover {
+    background-color: var(--bg-color);
+    border-color: var(--text-color);
+    transform: translateY(-2px);
+}
+

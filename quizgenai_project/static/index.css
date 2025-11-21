@@ -1,0 +1,40 @@
+.yt-note {
+    font-size: 0.8rem;
+    color: var(--subtle-text-color);
+    margin-top: 8px;
+}
+
+.results-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    width: auto;
+    margin: 0;
+    padding: 14px 30px; /* Match other buttons */
+}
+
+#reset-btn {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    box-shadow: none;
+}
+
+#reset-btn:hover {
+    background-color: var(--bg-color);
+    border-color: var(--text-color);
+    transform: translateY(-2px);
+}
+
+.download-btn, .flashcards-btn {
+    width: auto;
+    padding: 14px 30px;
+    margin: 0;
+    text-decoration: none;
+    display: none;
+}
