@@ -1,10 +1,11 @@
 .history-list {
     margin-top: 40px;
-    text-align: left;
+    text-align: center;
+    width: 100%;
 }
 
 .history-item {
-    background-color: var(--primary-light);
+    background-color: var(--container-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: 24px;
@@ -12,19 +13,21 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transition: box-shadow 0.2s ease;
+    transition: all 0.2s ease;
+    text-align: left;
 }
 
 body.dark-mode .history-item {
-    background-color: rgba(28, 28, 30, 0.85);
+    background-color: var(--container-bg);
 }
 
 .history-item:hover {
     box-shadow: var(--card-shadow);
+    border-color: var(--subtle-text-color);
 }
 
 .quiz-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-color);
     margin: 0 0 8px 0;
@@ -34,7 +37,7 @@ body.dark-mode .history-item {
 }
 
 .quiz-date {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--subtle-text-color);
 }
 
@@ -54,68 +57,47 @@ body.dark-mode .history-item {
 }
 
 .quiz-title {
-    margin: 0; /* Override previous margin */
+    margin: 0;
     flex-grow: 1;
 }
 
-.edit-title-btn {
+.edit-title-btn, .delete-quiz-btn {
     background: transparent !important;
     border: none !important;
     cursor: pointer;
-    padding: 8px !important;
-    border-radius: 50%;
+    padding: 6px !important;
+    border-radius: 4px;
     color: var(--subtle-text-color) !important;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.6;
+    opacity: 0.7;
     width: auto !important;
     height: auto !important;
     box-shadow: none !important;
     margin: 0 !important;
-    min-width: auto !important; /* Override any min-width */
+    min-width: auto !important;
 }
 
 .edit-title-btn:hover {
-    color: var(--primary-color) !important;
-    background-color: rgba(0, 122, 255, 0.1) !important;
+    color: var(--text-color) !important;
+    background-color: var(--bg-color) !important;
     opacity: 1;
-    transform: none !important; /* Prevent scale effect if unwanted */
-    box-shadow: none !important;
-}
-
-.delete-quiz-btn {
-    background: transparent !important;
-    border: none !important;
-    cursor: pointer;
-    padding: 8px !important;
-    border-radius: 50%;
-    color: var(--subtle-text-color) !important;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.6;
-    width: auto !important;
-    height: auto !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    min-width: auto !important; /* Override any min-width */
 }
 
 .delete-quiz-btn:hover {
     color: var(--danger-color) !important;
-    background-color: rgba(255, 59, 48, 0.1) !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
     opacity: 1;
 }
 
 .title-input {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     font-family: inherit;
-    padding: 4px 8px;
-    border: 2px solid var(--primary-color);
+    padding: 6px 10px;
+    border: 1px solid var(--text-color);
     border-radius: 6px;
     width: 100%;
     background-color: var(--bg-color);
@@ -142,19 +124,19 @@ body.dark-mode .history-item {
 }
 
 .save-btn {
-    color: #34c759; /* Apple Green */
+    color: var(--success-color);
 }
 
 .save-btn:hover {
-    background-color: rgba(52, 199, 89, 0.1);
+    background-color: rgba(16, 185, 129, 0.1);
 }
 
 .cancel-btn {
-    color: #ff3b30; /* Apple Red */
+    color: var(--danger-color);
 }
 
 .cancel-btn:hover {
-    background-color: rgba(255, 59, 48, 0.1);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
 /* --- Button Group Styling --- */
@@ -165,44 +147,53 @@ body.dark-mode .history-item {
     margin-top: 20px;
 }
 
-/* --- Base styles for both buttons --- */
-.primary-btn, .secondary-btn {
-    padding: 12px 24px;
+/* --- Warning Banner --- */
+.warning-banner {
+    background-color: rgba(255, 149, 0, 0.1);
+    border: 1px solid rgba(255, 149, 0, 0.3);
+    color: var(--text-color);
+    padding: 16px;
     border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.warning-banner strong {
+    color: #FF9500;
+}
+
+.warning-banner p {
+    margin: 4px 0 0 0;
     font-size: 0.9rem;
+    opacity: 0.9;
+    color: var(--text-color);
+}
+
+.warning-banner a {
+    color: var(--text-color);
     font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.2s ease;
-    flex: 1;
-    border: none;
+    text-decoration: underline;
 }
 
-/* Styles for the main action button (Retake Quiz) */
-.primary-btn {
-    background-color: var(--primary-color);
-    color: white;
+/* --- Auth Message --- */
+.auth-message {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    text-align: center !important;
+    display: block !important;
 }
 
-.primary-btn:hover {
-    background-color: #0051D5;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+.auth-message p {
+    color: var(--subtle-text-color);
 }
 
-/* Styles for the secondary action button (View Quiz) */
-.secondary-btn {
-    background-color: var(--primary-color);
-    color: white;
-    opacity: 0.8;
-}
-
-.secondary-btn:hover {
-    background-color: #0051D5;
-    opacity: 1;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+.auth-message strong {
+    color: var(--text-color);
 }
 

@@ -174,6 +174,18 @@ def generate_quiz_view(request):
             quiz_data=quiz_data
         )
 
+        # Limit anonymous quizzes to 5 (Rolling Window)
+        if not request.user.is_authenticated:
+            anon_quizzes = Quiz.objects.filter(user__isnull=True).order_by('created_at')
+            if anon_quizzes.count() > 5:
+                # Delete the oldest ones to keep only 5
+                num_to_delete = anon_quizzes.count() - 5
+                # Slicing a queryset returns a new queryset, we need to iterate or delete
+                # Note: Django doesn't support delete() on sliced querysets directly in some DBs,
+                # so we fetch IDs first.
+                ids_to_delete = list(anon_quizzes.values_list('id', flat=True)[:num_to_delete])
+                Quiz.objects.filter(id__in=ids_to_delete).delete()
+
         return JsonResponse({'quiz_id': str(quiz.id), 'questions': quiz_data})
 
     except Exception as e:

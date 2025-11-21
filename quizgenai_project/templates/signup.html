@@ -10,7 +10,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -18,17 +18,18 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
         
         .auth-container {
-            background: #ffffff;
+            background: var(--container-bg);
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
             width: 100%;
             max-width: 400px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
         
         .auth-header {
@@ -37,19 +38,16 @@
         }
         
         .auth-header h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
             font-weight: 700;
+            letter-spacing: -0.03em;
         }
         
         .auth-header p {
-            color: #666666;
+            color: var(--subtle-text-color);
             font-size: 0.95rem;
-            font-weight: 500;
         }
         
         .form-group {
@@ -59,79 +57,80 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 0.9rem;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e8e8e8;
-            border-radius: 10px;
-            font-family: 'Poppins', sans-serif;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
+            transition: all 0.2s ease;
+            background: var(--bg-color);
+            color: var(--text-color);
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #2a5298;
-            box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.1);
-            background: #ffffff;
+            border-color: var(--text-color);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .form-group input:focus {
+             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
         
         .error-message {
-            background-color: #fee8e6;
-            color: #d32f2f;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 6px;
             margin-bottom: 20px;
             font-size: 0.9rem;
-            border-left: 4px solid #d32f2f;
+            border: 1px solid var(--danger-color);
         }
         
         .signup-btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
+            padding: 12px;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .signup-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
-        }
-        
-        .signup-btn:active {
-            transform: translateY(0);
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .auth-footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 24px;
             font-size: 0.9rem;
-            color: #666;
+            color: var(--subtle-text-color);
         }
         
         .auth-footer a {
-            color: #2a5298;
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
+            transition: opacity 0.2s ease;
         }
         
         .auth-footer a:hover {
-            color: #1e3c72;
+            opacity: 0.8;
             text-decoration: underline;
         }
     </style>
@@ -158,7 +157,7 @@
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required placeholder="Enter your email">
-                <span id="email-error" style="color: #c33; font-size: 0.85rem; display: none; margin-top: 5px; display: block;"></span>
+                <span id="email-error" style="color: var(--danger-color); font-size: 0.85rem; display: none; margin-top: 5px;"></span>
             </div>
             
             <div class="form-group">
@@ -214,6 +213,25 @@
                 e.preventDefault();
             }
         });
+
+        // Check for saved theme preference, otherwise use system preference
+        const getPreferredTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setTheme = (theme) => {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        };
+
+        setTheme(getPreferredTheme());
     </script>
 </body>
 </html>

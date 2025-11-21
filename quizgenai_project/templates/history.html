@@ -11,19 +11,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        .auth-message {
-            background-color: var(--primary-light);
-            border-left: 4px solid var(--primary-color);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            text-align: center !important;
-            display: block !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <button id="theme-toggle" class="theme-toggle-fixed" title="Toggle dark mode">
@@ -56,13 +44,25 @@
                     {% endif %}
                 </ul>
             </nav>
-            <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border-color);">
+            <div class="sidebar-footer">
                 {% if user.is_authenticated %}
-                    <p style="font-size: 0.85rem; color: var(--subtle-text-color); margin-bottom: 10px;">Logged in as:<br><strong style="color: var(--text-color);">{{ user.username }}</strong></p>
-                    <a href="/logout/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Logout</a>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <span class="username">{{ user.username }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" class="nav-item logout-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </a>
                 {% else %}
-                    <a href="/login/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 8px;">Sign In</a>
-                    <a href="/signup/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                    <a href="{% url 'login' %}" class="nav-item">Login</a>
+                    <a href="{% url 'signup' %}" class="nav-item">Sign Up</a>
                 {% endif %}
             </div>
         </aside>
@@ -72,6 +72,19 @@
                 <header>
                     <h1>Quiz History</h1>
                 </header>
+
+                {% if not user.is_authenticated %}
+                    <div style="background-color: rgba(255, 149, 0, 0.1); border: 1px solid rgba(255, 149, 0, 0.3); color: var(--text-color); padding: 16px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">⚠️</span>
+                        <div>
+                            <strong style="color: #FF9500;">Guest Limit Reached?</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 0.9rem; opacity: 0.8;">
+                                Only the last 5 quizzes are saved for guests. Older quizzes are automatically deleted. 
+                                <a href="/login/" style="color: var(--primary-color); font-weight: 600; text-decoration: underline;">Sign in</a> to save unlimited quizzes.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if not user.is_authenticated %}
                     <div class="auth-message">

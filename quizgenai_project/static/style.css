@@ -1,38 +1,42 @@
 :root {
-    /* Apple-inspired Light Mode */
-    --primary-color: #007AFF;      /* Apple Blue */
-    --primary-gradient: linear-gradient(135deg, #007AFF, #0051D5);
-    --primary-light: #F2F2F7;      /* Light Gray Background */
-    --text-color: #1D1D1F;         /* Almost Black Text */
-    --subtle-text-color: #86868B;  /* Gray Text */
-    --bg-color: #F5F5F7;           /* Light Gray Background */
-    --container-bg: rgba(255, 255, 255, 0.8); /* Glassmorphism */
-    --border-color: rgba(0, 0, 0, 0.1);       /* Light Border */
-    --disabled-bg: #F2F2F7;        /* Disabled Background */
-    --disabled-text: #999999;      /* Disabled Text */
-    --success-color: #34C759;      /* Green */
-    --danger-color: #FF3B30;       /* Red */
+    /* Modern Minimalist Light Mode (Vercel/Geist Inspired) */
+    --primary-color: #18181B;      /* Zinc 900 (Soft Black) */
+    --primary-gradient: linear-gradient(135deg, #18181B, #27272A); /* Subtle gradient */
+    --primary-light: #F4F4F5;      /* Zinc 100 */
+    --text-color: #18181B;         /* Zinc 900 */
+    --subtle-text-color: #71717A;  /* Zinc 500 */
+    --bg-color: #FAFAFA;           /* Zinc 50 (Off-white) */
+    --container-bg: #FFFFFF;       /* Pure White */
+    --border-color: #E4E4E7;       /* Zinc 200 */
+    --disabled-bg: #F4F4F5;
+    --disabled-text: #A1A1AA;
+    --success-color: #10B981;      /* Emerald 500 */
+    --danger-color: #EF4444;       /* Red 500 */
 
-    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-    --border-radius: 16px;
-    --backdrop-blur: blur(20px);
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+    --border-radius: 8px;          /* Tighter radius */
+    --backdrop-blur: none;         /* Removing glassmorphism for cleaner look */
+    
+    --primary-foreground: #FFFFFF; /* Text on primary color */
 }
 
-/* Dark mode variables - Apple's Dark Mode Aesthetic */
+/* Modern Minimalist Dark Mode */
 body.dark-mode {
-    --primary-color: #0A84FF;      /* Bright Apple Blue for Dark Mode */
-    --primary-gradient: linear-gradient(135deg, #0A84FF, #0051D5);
-    --primary-light: #1C1C1E;      /* Dark Gray Background */
-    --text-color: #F5F5F7;         /* White Text */
-    --subtle-text-color: #86868B;  /* Gray Text */
-    --bg-color: #000000;           /* Black Background */
-    --container-bg: rgba(28, 28, 30, 0.7);  /* Semi-transparent dark cards */
-    --border-color: rgba(255, 255, 255, 0.1); /* Dark Border */
-    --disabled-bg: #2C2C2E;        /* Disabled Background */
-    --disabled-text: #636366;      /* Disabled Text */
-    --success-color: #30B0C0;      /* Cyan Green */
-    --danger-color: #FF453A;       /* Bright Red */
-    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    --primary-color: #FAFAFA;      /* Zinc 50 (Off-white) */
+    --primary-gradient: linear-gradient(135deg, #FAFAFA, #E4E4E7);
+    --primary-light: #27272A;      /* Zinc 800 */
+    --text-color: #FAFAFA;         /* Zinc 50 */
+    --subtle-text-color: #A1A1AA;  /* Zinc 400 */
+    --bg-color: #09090B;           /* Zinc 950 (Deep Black) */
+    --container-bg: #18181B;       /* Zinc 900 */
+    --border-color: #27272A;       /* Zinc 800 */
+    --disabled-bg: #27272A;
+    --disabled-text: #52525B;
+    --success-color: #34D399;      /* Emerald 400 */
+    --danger-color: #F87171;       /* Red 400 */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    
+    --primary-foreground: #18181B; /* Text on primary color (Dark text on light button) */
 }
 
 * {
@@ -46,12 +50,12 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Poppins', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Switched to Inter/System */
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
     min-height: 100vh;
-    transition: background-color 0.5s ease, color 0.5s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .page-wrapper {
@@ -81,14 +85,12 @@ body {
 /* --- Sidebar --- */
 #sidebar {
     width: 260px;
-    background-color: var(--container-bg);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
+    background-color: var(--bg-color); /* Match background for seamless look */
+    border-right: 1px solid var(--border-color);
     color: var(--text-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    border-right: 1px solid var(--border-color);
     
     /* Sticky positioning to keep it in view */
     position: sticky;
@@ -179,8 +181,32 @@ body.dark-mode .sidebar-nav li a:hover {
 
 .sidebar-nav li.active a {
     background-color: var(--primary-color);
-    color: #fff;
+    color: var(--primary-foreground);
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* --- Sidebar Footer --- */
+.sidebar-footer {
+    padding: 24px;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer p {
+    font-size: 0.85rem;
+    color: var(--subtle-text-color);
+    margin-bottom: 12px;
+}
+
+.sidebar-footer strong {
+    color: var(--text-color);
+}
+
+.sidebar-footer .primary-btn, .sidebar-footer .secondary-btn {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 10px;
+    font-size: 0.9rem;
 }
 
 /* --- Main Content Area (for centering) --- */
@@ -196,8 +222,6 @@ body.dark-mode .sidebar-nav li a:hover {
 /* --- Main Content Container (The Card) --- */
 .container {
     background-color: var(--container-bg);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
     padding: 48px;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
@@ -257,7 +281,7 @@ body.dark-mode .upload-area {
     gap: 10px;
     padding: 14px 28px;
     background: var(--primary-gradient);
-    color: white;
+    color: var(--primary-foreground);
     border-radius: 30px;
     cursor: pointer;
     font-weight: 600;
@@ -367,26 +391,29 @@ body.dark-mode #custom-instructions {
 
 /* --- Buttons --- */
 button, .submit-btn, .primary-btn, .secondary-btn {
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 14px;
+    background: var(--primary-color);
+    color: var(--primary-foreground);
+    border: 1px solid transparent;
+    padding: 12px 24px;
+    border-radius: 6px;
     font-family: inherit;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
     width: 100%;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* Removed specific dark mode override as var(--primary-foreground) handles it */
+
 button:hover:not(:disabled), .submit-btn:hover, .primary-btn:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 button:active:not(:disabled) {
@@ -719,18 +746,25 @@ body.dark-mode .option {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: none;
+    opacity: 0.8; /* Slightly dim inactive tabs */
 }
 
 .tab-btn.active {
     background: var(--container-bg);
     color: var(--primary-color);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    opacity: 1;
 }
 
 .tab-btn:hover:not(.active) {
     color: var(--text-color);
     background: rgba(0,0,0,0.02);
     transform: none;
+    opacity: 1;
+}
+
+body.dark-mode .tab-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.05);
 }
 
 /* Tab Content - Fix for missing styles */
@@ -977,6 +1011,12 @@ body.dark-mode .history-item {
     background-color: var(--bg-color);
     border-color: var(--text-color);
     transform: translateY(-2px);
+}
+
+/* --- Placeholders --- */
+::placeholder {
+    color: var(--subtle-text-color);
+    opacity: 0.7;
 }
 
 

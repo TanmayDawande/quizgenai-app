@@ -10,7 +10,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* Allow natural page scrolling for settings */
@@ -36,110 +36,113 @@
             margin: 0 auto;
         }
         header {
-            margin-bottom: 12px;
+            margin-bottom: 24px;
         }
         h1 {
             font-size: 1.5rem;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
         p {
             font-size: 0.9rem;
+            color: var(--subtle-text-color);
         }
         .settings-section {
             background: var(--card-background);
-            padding: 14px;
+            padding: 24px;
             border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 24px;
             border: 1px solid var(--border-color);
         }
         .settings-section h2 {
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
             color: var(--text-color);
+            font-weight: 600;
         }
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 16px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             font-weight: 500;
             color: var(--text-color);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
         .form-group input {
             width: 100%;
-            padding: 9px 11px;
+            padding: 10px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
             background: var(--input-background);
             color: var(--text-color);
-            transition: border-color 0.3s;
+            transition: border-color 0.2s, box-shadow 0.2s;
             box-sizing: border-box;
         }
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 20px;
         }
         .save-btn, .cancel-btn {
             flex: 1;
-            padding: 9px 14px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.2s;
         }
         .save-btn {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--primary-foreground);
         }
         .save-btn:hover {
-            background-color: #0051D5;
+            opacity: 0.9;
         }
         .cancel-btn {
-            background-color: var(--border-color);
+            background-color: transparent;
+            border-color: var(--border-color);
             color: var(--text-color);
         }
         .cancel-btn:hover {
-            background-color: var(--subtle-text-color);
+            background-color: var(--secondary-background);
         }
         .message {
-            padding: 12px 15px;
+            padding: 12px 16px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         .success-message {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
         .error-message {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
         .password-info {
-            background: var(--border-color);
-            padding: 8px;
+            background: var(--secondary-background);
+            padding: 12px;
             border-radius: 8px;
-            font-size: 0.75rem;
-            margin-bottom: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
             color: var(--subtle-text-color);
-        }
-        body.dark-mode .password-info {
-            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
         }
     </style>
 </head>
@@ -161,13 +164,25 @@
                     <li class="active"><a href="/settings/">Settings</a></li>
                 </ul>
             </nav>
-            <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border-color);">
+            <div class="sidebar-footer">
                 {% if user.is_authenticated %}
-                    <p style="font-size: 0.85rem; color: var(--subtle-text-color); margin-bottom: 10px;">Logged in as:<br><strong style="color: var(--text-color);">{{ user.username }}</strong></p>
-                    <a href="/logout/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Logout</a>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <span class="username">{{ user.username }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" class="nav-item logout-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </a>
                 {% else %}
-                    <a href="/login/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 8px;">Sign In</a>
-                    <a href="/signup/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                    <a href="{% url 'login' %}" class="nav-item">Login</a>
+                    <a href="{% url 'signup' %}" class="nav-item">Sign Up</a>
                 {% endif %}
             </div>
         </aside>
