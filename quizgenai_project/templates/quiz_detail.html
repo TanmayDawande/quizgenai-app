@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ quiz.title }}</title>
     
+    <link rel="icon" href="{% static 'logo-white.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +32,11 @@
     <div class="page-wrapper">
         <aside id="sidebar">
             <div class="sidebar-header">
-                <h2><a href="/">QuizGenAi</a></h2>
+                <h2>
+                    <a href="/">
+                        QuizGenAi
+                    </a>
+                </h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
@@ -74,7 +79,7 @@
                             <h1 style="margin-bottom: 0; text-align: center;">{{ quiz.title }}</h1>
                             <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
                                 <a href="{% url 'download_quiz_pdf' quiz.id %}" class="submit-btn" style="width: auto; padding: 12px 24px; margin: 0; text-decoration: none; display: inline-block;">Download PDF</a>
-                                <a href="{% url 'flashcards' quiz.id %}" class="submit-btn" style="width: auto; padding: 12px 24px; margin: 0; background: linear-gradient(135deg, #FF9500, #FF5E3A); text-decoration: none; display: inline-block;">Study Flashcards</a>
+                                <a href="{% url 'flashcards' quiz.id %}" class="submit-btn" style="width: auto; padding: 12px 24px; margin: 0; text-decoration: none; display: inline-block;">Study Flashcards</a>
                             </div>
                         </div>
                         <p style="margin-top: 20px; text-align: center;">Viewing a quiz from your history. The correct answer is highlighted.</p>

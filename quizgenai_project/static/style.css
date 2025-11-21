@@ -10,8 +10,8 @@
     --border-color: #E4E4E7;       /* Zinc 200 */
     --disabled-bg: #F4F4F5;
     --disabled-text: #A1A1AA;
-    --success-color: #10B981;      /* Emerald 500 */
-    --danger-color: #EF4444;       /* Red 500 */
+    --success-color: #059669;      /* Emerald 600 */
+    --danger-color: #DC2626;       /* Red 600 */
 
     --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Subtle shadow */
     --border-radius: 8px;          /* Tighter radius */
@@ -28,13 +28,13 @@ body.dark-mode {
     --text-color: #FAFAFA;         /* Zinc 50 */
     --subtle-text-color: #A1A1AA;  /* Zinc 400 */
     --bg-color: #09090B;           /* Zinc 950 (Deep Black) */
-    --container-bg: #18181B;       /* Zinc 900 */
-    --border-color: #27272A;       /* Zinc 800 */
+    --container-bg: #27272A;       /* Zinc 800 (Lighter than bg) */
+    --border-color: #3F3F46;       /* Zinc 700 (More visible border) */
     --disabled-bg: #27272A;
     --disabled-text: #52525B;
-    --success-color: #34D399;      /* Emerald 400 */
-    --danger-color: #F87171;       /* Red 400 */
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --success-color: #10B981;      /* Emerald 500 */
+    --danger-color: #EF4444;       /* Red 500 */
+    --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
     
     --primary-foreground: #18181B; /* Text on primary color (Dark text on light button) */
 }
@@ -51,11 +51,18 @@ html {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Switched to Inter/System */
-    background-color: var(--bg-color);
+    background: var(--bg-color);
     color: var(--text-color);
     display: flex;
     min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode {
+    background: linear-gradient(-45deg, #09090B, #18181B, #27272A, #09090B);
+    background-size: 400% 400%;
+    animation: gradient-animation 15s ease infinite;
+    background-attachment: fixed;
 }
 
 .page-wrapper {
@@ -74,12 +81,33 @@ body {
     to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .animate-fade-in {
     animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scale-in {
     animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glassmorphism */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+body.dark-mode .glass-panel {
+    background: rgba(24, 24, 27, 0.6); /* Zinc 900 with opacity */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* --- Sidebar --- */
@@ -110,10 +138,27 @@ body {
 .sidebar-header h2 {
     color: var(--text-color);
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
 }
+
+.sidebar-logo {
+    height: 36px;
+    width: auto;
+    margin-right: 12px;
+    transition: filter 0.3s ease;
+}
+
+body.dark-mode .sidebar-logo {
+    filter: invert(1);
+}
+
 .sidebar-header a {
     color: var(--text-color);
     text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
 .theme-toggle-fixed {
@@ -185,6 +230,13 @@ body.dark-mode .sidebar-nav li a:hover {
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
+.sidebar-nav li.active a:hover,
+body.dark-mode .sidebar-nav li.active a:hover {
+    background-color: var(--primary-color);
+    color: var(--primary-foreground);
+    opacity: 0.9;
+}
+
 /* --- Sidebar Footer --- */
 .sidebar-footer {
     padding: 24px;
@@ -207,6 +259,82 @@ body.dark-mode .sidebar-nav li a:hover {
     margin-bottom: 8px;
     padding: 10px;
     font-size: 0.9rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    color: var(--subtle-text-color);
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.nav-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+}
+
+body.dark-mode .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: default;
+}
+
+/* Removed hover effect for user profile */
+.user-profile:hover {
+    background-color: transparent;
+}
+
+body.dark-mode .user-profile:hover {
+    background-color: transparent;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: var(--primary-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.username {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logout-link {
+    color: var(--danger-color) !important;
+    margin-top: 4px;
+}
+
+.logout-link:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: var(--danger-color) !important;
 }
 
 /* --- Main Content Area (for centering) --- */
@@ -778,7 +906,7 @@ body.dark-mode .tab-btn:hover:not(.active) {
 }
 
 /* Input Fields */
-input[type="text"], input[type="url"] {
+input[type="text"], input[type="url"], input[type="password"], input[type="email"] {
     width: 100%;
     padding: 16px;
     border: 1px solid var(--border-color);
@@ -789,7 +917,7 @@ input[type="text"], input[type="url"] {
     transition: all 0.3s ease;
 }
 
-input[type="text"]:focus, input[type="url"]:focus {
+input[type="text"]:focus, input[type="url"]:focus, input[type="password"]:focus, input[type="email"]:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);

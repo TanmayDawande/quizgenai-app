@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to MCQ Quiz Generator</title>
     
+    <link rel="icon" href="{% static 'logo-white.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=7">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +21,11 @@
         </button>
         <aside id="sidebar">
             <div class="sidebar-header">
-                <h2><a href="/">QuizGenAi</a></h2>
+                <h2>
+                    <a href="/">
+                        QuizGenAi
+                    </a>
+                </h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
@@ -34,11 +39,23 @@
             </nav>
             <div class="sidebar-footer">
                 {% if user.is_authenticated %}
-                    <p>Logged in as:<br><strong>{{ user.username }}</strong></p>
-                    <a href="/logout/" class="primary-btn">Logout</a>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <span class="username">{{ user.username }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" class="nav-item logout-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </a>
                 {% else %}
-                    <a href="/login/" class="primary-btn">Sign In</a>
-                    <a href="/signup/" class="secondary-btn">Sign Up</a>
+                    <a href="{% url 'login' %}" class="nav-item">Login</a>
+                    <a href="{% url 'signup' %}" class="nav-item">Sign Up</a>
                 {% endif %}
             </div>
         </aside>
@@ -123,7 +140,7 @@
                     <div id="results-actions" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                         <button id="reset-btn" style="width: auto; margin: 0;">Try Another PDF</button>
                         <a id="download-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; text-decoration: none; display: none;">Download PDF</a>
-                        <a id="flashcards-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; background-color: #FF9500; text-decoration: none; display: none;">Flashcards</a>
+                        <a id="flashcards-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; text-decoration: none; display: none;">Flashcards</a>
                     </div>
                 </section>
             </main>
