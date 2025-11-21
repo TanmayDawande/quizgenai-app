@@ -55,20 +55,23 @@
         </aside>
 
         <div class="main-content-area">
-            <main class="container">
+            <main class="container animate-fade-in">
                 <section id="quiz-container">
                     <header>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                             <h1 style="margin-bottom: 0; text-align: center;">{{ quiz.title }}</h1>
-                            <a href="{% url 'download_quiz_pdf' quiz.id %}" class="submit-btn" style="width: auto; padding: 10px 20px; margin: 0; text-decoration: none; display: inline-block;">Download PDF</a>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                                <a href="{% url 'download_quiz_pdf' quiz.id %}" class="submit-btn" style="width: auto; padding: 12px 24px; margin: 0; text-decoration: none; display: inline-block;">Download PDF</a>
+                                <a href="{% url 'flashcards' quiz.id %}" class="submit-btn" style="width: auto; padding: 12px 24px; margin: 0; background: linear-gradient(135deg, #FF9500, #FF5E3A); text-decoration: none; display: inline-block;">Study Flashcards</a>
+                            </div>
                         </div>
-                        <p style="margin-top: 15px; text-align: center;">Viewing a quiz from your history. The correct answer is highlighted.</p>
+                        <p style="margin-top: 20px; text-align: center;">Viewing a quiz from your history. The correct answer is highlighted.</p>
                     </header>
 
                     <!-- This section now directly displays the quiz questions and answers -->
                     <div id="quiz-display">
                         {% for question, user_answer in questions_with_answers %}
-                            <div class="question-block">
+                            <div class="question-block animate-fade-in" style="animation-delay: {{ forloop.counter0|add:'0'|stringformat:'d' }}00ms; opacity: 0; animation-fill-mode: forwards;">
                                 <p class="question-text">{{ forloop.counter }}. {{ question.question }}</p>
                                 <ul class="options-list view-only">
                                     {% for option in question.options %}
@@ -94,7 +97,7 @@
                         {% endfor %}
                     </div>
                     
-                    <a href="/history/" class="submit-btn" style="text-decoration: none; display: block; margin-top: 40px;">Back to History</a>
+                    <a href="/history/" class="submit-btn" style="text-decoration: none; display: block; margin-top: 40px; background: transparent; border: 2px solid var(--border-color); color: var(--text-color); box-shadow: none;">Back to History</a>
                 </section>
             </main>
         </div>

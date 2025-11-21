@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackArea = document.getElementById('feedback-area');
     const resetBtn = document.getElementById('reset-btn');
     const downloadBtn = document.getElementById('download-btn');
+    const flashcardsBtn = document.getElementById('flashcards-btn');
 
     const questionCountSlider = document.getElementById('question-count-slider');
     const sliderValueDisplay = document.getElementById('slider-value');
@@ -326,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (customInstructionsInput) customInstructionsInput.value = '';
             quizData = [];
             if (downloadBtn) downloadBtn.style.display = 'none';
+            if (flashcardsBtn) flashcardsBtn.style.display = 'none';
         });
     }
 
@@ -335,7 +337,9 @@ document.addEventListener('DOMContentLoaded', () => {
         quizForm.innerHTML = '';
         questions.forEach((q, index) => {
             const questionBlock = document.createElement('div');
-            questionBlock.classList.add('question-block');
+            questionBlock.classList.add('question-block', 'animate-fade-in');
+            questionBlock.style.animationDelay = `${index * 0.1}s`;
+            questionBlock.style.opacity = '0'; // Start invisible so animation can fade it in
 
             const questionText = document.createElement('p');
             questionText.classList.add('question-text');
@@ -399,7 +403,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         quizData.forEach((q, index) => {
             const feedbackBlock = document.createElement('div');
-            feedbackBlock.classList.add('question-block');
+            feedbackBlock.classList.add('question-block', 'animate-fade-in');
+            feedbackBlock.style.animationDelay = `${index * 0.1}s`;
+            feedbackBlock.style.opacity = '0';
 
             const questionText = document.createElement('p');
             questionText.classList.add('question-text');
@@ -454,6 +460,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuizId && downloadBtn) {
             downloadBtn.href = `/quiz/${currentQuizId}/download/`;
             downloadBtn.style.display = 'inline-block';
+        }
+        
+        if (currentQuizId && flashcardsBtn) {
+            flashcardsBtn.href = `/quiz/${currentQuizId}/flashcards/`;
+            flashcardsBtn.style.display = 'inline-block';
         }
     }
 

@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - {{ quiz.title }}</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle-fixed" title="Toggle dark mode">
+        <span class="toggle-icon">🌙</span>
+    </button>
+    
+    <div class="page-wrapper">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2><a href="/">QuizGenAi</a></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/">New Quiz</a></li>
+                    <li class="active"><a href="/history/">History</a></li>
+                    <li><a href="/progress/">Progress</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/settings/">Settings</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border-color);">
+                {% if user.is_authenticated %}
+                    <p style="font-size: 0.85rem; color: var(--subtle-text-color); margin-bottom: 10px;">Logged in as:<br><strong style="color: var(--text-color);">{{ user.username }}</strong></p>
+                    <a href="/logout/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Logout</a>
+                {% else %}
+                    <a href="/login/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 8px;">Sign In</a>
+                    <a href="/signup/" style="display: inline-block; width: 100%; padding: 10px 16px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <div class="main-content-area">
+            <main class="container animate-fade-in" style="max-width: 800px;">
+                <header style="text-align: center; margin-bottom: 20px;">
+                    <h1>{{ quiz.title }}</h1>
+                    <p>Flashcard Mode</p>
+                </header>
+
+                <div class="flashcard-container" id="flashcard">
+                    <div class="flashcard">
+                        <div class="flashcard-face flashcard-front">
+                            <span class="card-label">Question</span>
+                            <p class="card-content" id="card-question">Loading...</p>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <span class="card-label">Answer</span>
+                            <p class="card-answer" id="card-answer">Loading...</p>
+                            <p class="card-explanation" id="card-explanation">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="instruction-hint">Click card to flip</p>
+
+                <div class="controls">
+                    <button class="control-btn" id="prev-btn">← Previous</button>
+                    <span class="progress-indicator" id="progress">1 / 5</span>
+                    <button class="control-btn" id="next-btn">Next →</button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="{% url 'quiz_detail' quiz.id %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Back to Quiz Details</a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Theme Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const toggleIcon = document.querySelector('.toggle-icon');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (toggleIcon) toggleIcon.textContent = '☀️';
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                if (toggleIcon) toggleIcon.textContent = isDark ? '☀️' : '🌙';
+            });
+        }
+
+        // Flashcard Logic
+        const quizData = {{ quiz.quiz_data|safe }};
+        let currentIndex = 0;
+        
+        const flashcard = document.getElementById('flashcard');
+        const questionEl = document.getElementById('card-question');
+        const answerEl = document.getElementById('card-answer');
+        const explanationEl = document.getElementById('card-explanation');
+        const progressEl = document.getElementById('progress');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        function updateCard() {
+            const currentItem = quizData[currentIndex];
+            
+            // Reset flip
+            flashcard.querySelector('.flashcard').classList.remove('flipped');
+            
+            // Update content with a slight delay to allow flip reset if needed
+            setTimeout(() => {
+                questionEl.textContent = currentItem.question;
+                
+                const correctIndex = currentItem.correctAnswer;
+                const correctOption = currentItem.options[correctIndex];
+                answerEl.textContent = correctOption;
+                
+                explanationEl.textContent = currentItem.explanation || "No explanation provided.";
+                
+                progressEl.textContent = `${currentIndex + 1} / ${quizData.length}`;
+                
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === quizData.length - 1;
+                
+                prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+                nextBtn.style.opacity = currentIndex === quizData.length - 1 ? '0.5' : '1';
+            }, 150);
+        }
+        
+        flashcard.addEventListener('click', () => {
+            flashcard.querySelector('.flashcard').classList.toggle('flipped');
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < quizData.length - 1) {
+                currentIndex++;
+                updateCard();
+            }
+        });
+        
+        // Initialize
+        updateCard();
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevBtn.click();
+            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === ' ' || e.key === 'Enter') flashcard.click();
+        });
+    </script>
+</body>
+</html>

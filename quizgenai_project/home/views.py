@@ -430,3 +430,12 @@ def download_quiz_pdf(request, quiz_id):
     
     return response
 
+@no_cache
+def flashcards_view(request, quiz_id):
+    if request.user.is_authenticated:
+        quiz = get_object_or_404(Quiz, id=quiz_id, user=request.user)
+    else:
+        quiz = get_object_or_404(Quiz, id=quiz_id, user__isnull=True)
+    
+    return render(request, 'flashcards.html', {'quiz': quiz})
+

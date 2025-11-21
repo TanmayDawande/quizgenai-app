@@ -11,129 +11,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Default: Fixed height, no scrolling for main page */
-        body {
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* Class to enable scrolling for quiz/results pages */
-        body.scrollable {
-            height: auto;
-            min-height: 100vh;
-            overflow-y: auto;
-        }
-
-        .page-wrapper {
-            min-height: 100vh;
-            display: flex;
-        }
-        .main-content-area {
-            padding: 40px 20px;
-            width: 100%;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        
-        /* Keep existing specific styles */
-        header {
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-        p {
-            font-size: 1rem;
-        }
-        .upload-area {
-            margin: 20px 0;
-            padding: 40px;
-        }
-        .custom-instructions-container {
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .custom-instructions-container label {
-            font-size: 0.95rem;
-        }
-        #custom-instructions {
-            min-height: 80px;
-            font-size: 0.9rem;
-        }
-        .question-count-container {
-            margin-bottom: 20px;
-            margin-top: 20px;
-        }
-        .question-count-container label {
-            font-size: 1rem;
-        }
-        #generate-btn {
-            margin-top: 20px;
-            padding: 14px 30px;
-            font-size: 16px;
-        }
-        
-        /* Tabs Styles */
-        .input-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            color: var(--subtle-text-color);
-            cursor: pointer;
-            position: relative;
-            transition: color 0.3s;
-        }
-        .tab-btn.active {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .url-input-container {
-            margin: 20px 0;
-        }
-        .url-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            background: var(--input-background);
-            color: var(--text-color);
-            box-sizing: border-box;
-        }
-        .url-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-    </style>
 </head>
 <body>
 
@@ -166,14 +43,14 @@
             </div>
         </aside>
         <div class="main-content-area">
-            <main class="container">
+            <main class="container animate-fade-in">
                 <section id="upload-container">
                     <header>
                         <h1>Quiz Generator</h1>
                         <p>Generate a multiple-choice quiz from a PDF or a URL.</p>
                     </header>
 
-                    <div class="input-tabs">
+                    <div class="tab-container">
                         <button class="tab-btn active" data-tab="pdf-tab">Upload PDF</button>
                         <button class="tab-btn" data-tab="url-tab">Enter URL</button>
                         <button class="tab-btn" data-tab="yt-tab">YouTube Video</button>
@@ -188,6 +65,7 @@
                             <span id="file-name-display" class="file-name">No file selected</span>
                         </div>
                     </div>
+
 
                     <div id="url-tab" class="tab-content">
                         <div class="url-input-container">
@@ -245,6 +123,7 @@
                     <div id="results-actions" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                         <button id="reset-btn" style="width: auto; margin: 0;">Try Another PDF</button>
                         <a id="download-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; text-decoration: none; display: none;">Download PDF</a>
+                        <a id="flashcards-btn" href="#" class="submit-btn" style="width: auto; padding: 14px 30px; margin: 0; background-color: #FF9500; text-decoration: none; display: none;">Flashcards</a>
                     </div>
                 </section>
             </main>
