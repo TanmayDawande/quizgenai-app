@@ -58,8 +58,11 @@
             <main class="container">
                 <section id="quiz-container">
                     <header>
-                        <h1>{{ quiz.title }}</h1>
-                        <p>Viewing a quiz from your history. The correct answer is highlighted.</p>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                            <h1 style="margin-bottom: 0; text-align: center;">{{ quiz.title }}</h1>
+                            <a href="{% url 'download_quiz_pdf' quiz.id %}" class="submit-btn" style="width: auto; padding: 10px 20px; margin: 0; text-decoration: none; display: inline-block;">Download PDF</a>
+                        </div>
+                        <p style="margin-top: 15px; text-align: center;">Viewing a quiz from your history. The correct answer is highlighted.</p>
                     </header>
 
                     <!-- This section now directly displays the quiz questions and answers -->

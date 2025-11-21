@@ -13,5 +13,6 @@ urlpatterns = [
     path("history/", views.history_view, name="history"),
     path("quiz/<uuid:quiz_id>/", views.quiz_detail_view, name="quiz_detail"),
     path("quiz/<uuid:quiz_id>/retake/", views.quiz_retake_view, name="quiz_retake"),
+    path("quiz/<uuid:quiz_id>/download/", views.download_quiz_pdf, name="download_quiz_pdf"),
     path("progress/", views.progress_view, name="progress")
 ]

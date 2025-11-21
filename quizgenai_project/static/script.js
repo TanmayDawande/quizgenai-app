@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('score-display');
     const feedbackArea = document.getElementById('feedback-area');
     const resetBtn = document.getElementById('reset-btn');
+    const downloadBtn = document.getElementById('download-btn');
 
     const questionCountSlider = document.getElementById('question-count-slider');
     const sliderValueDisplay = document.getElementById('slider-value');
@@ -226,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
             quizData = data;
             displayQuiz(quizData);
 
+            // Wait for the timer to finish if it hasn't already
+            if (secondsRemaining > 0) {
+                await new Promise(resolve => setTimeout(resolve, secondsRemaining * 1000));
+            }
+
             // Finish the timer visually before showing the quiz
             clearInterval(countdownInterval);
             if (countdownTimer) countdownTimer.textContent = "00:00";
@@ -301,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sliderValueDisplay) sliderValueDisplay.textContent = '5';
             if (customInstructionsInput) customInstructionsInput.value = '';
             quizData = [];
+            if (downloadBtn) downloadBtn.style.display = 'none';
         });
     }
 
@@ -425,6 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             feedbackArea.appendChild(feedbackBlock);
         });
+
+        if (currentQuizId && downloadBtn) {
+            downloadBtn.href = `/quiz/${currentQuizId}/download/`;
+            downloadBtn.style.display = 'inline-block';
+        }
     }
 
     function getUserAnswers() {

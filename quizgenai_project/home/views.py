@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,12 @@ from . import services
 from .models import Quiz, QuizAttempt
 import json
 import re
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from io import BytesIO
 
 def no_cache(view_func):
     """Decorator to prevent caching of authenticated pages"""
@@ -359,4 +365,68 @@ def progress_view(request):
         'total_questions_all': total_questions_all
     }
     return render(request, 'progress.html', context)
+
+def download_quiz_pdf(request, quiz_id):
+    if request.user.is_authenticated:
+        quiz = get_object_or_404(Quiz, id=quiz_id, user=request.user)
+    else:
+        quiz = get_object_or_404(Quiz, id=quiz_id, user__isnull=True)
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='CenterTitle', parent=styles['Heading1'], alignment=TA_CENTER, spaceAfter=20))
+    styles.add(ParagraphStyle(name='QuestionText', parent=styles['Normal'], fontSize=12, spaceAfter=10, leading=14))
+    styles.add(ParagraphStyle(name='OptionText', parent=styles['Normal'], fontSize=11, leftIndent=20, spaceAfter=5))
+    styles.add(ParagraphStyle(name='CorrectAnswer', parent=styles['Normal'], fontSize=11, textColor=colors.green, leftIndent=20, spaceAfter=5))
+    styles.add(ParagraphStyle(name='Explanation', parent=styles['Italic'], fontSize=10, textColor=colors.gray, leftIndent=20, spaceAfter=15))
+
+    story = []
+
+    # Title Page
+    story.append(Paragraph(quiz.title, styles['CenterTitle']))
+    story.append(Spacer(1, 12))
+    story.append(Paragraph("Quiz Questions", styles['Heading2']))
+    story.append(Spacer(1, 12))
+
+    # Questions Section
+    for i, q in enumerate(quiz.quiz_data):
+        question_text = f"{i+1}. {q['question']}"
+        story.append(Paragraph(question_text, styles['QuestionText']))
+        
+        for opt_idx, option in enumerate(q['options']):
+            option_char = chr(65 + opt_idx) # A, B, C, D
+            story.append(Paragraph(f"{option_char}) {option}", styles['OptionText']))
+        
+        story.append(Spacer(1, 12))
+
+    # Answer Key Section
+    story.append(PageBreak())
+    story.append(Paragraph("Answer Key & Explanations", styles['CenterTitle']))
+    story.append(Spacer(1, 12))
+
+    for i, q in enumerate(quiz.quiz_data):
+        question_text = f"{i+1}. {q['question']}"
+        story.append(Paragraph(question_text, styles['QuestionText']))
+        
+        correct_idx = q['correctAnswer']
+        correct_option = q['options'][correct_idx]
+        correct_char = chr(65 + correct_idx)
+        
+        story.append(Paragraph(f"Correct Answer: {correct_char}) {correct_option}", styles['CorrectAnswer']))
+        
+        if 'explanation' in q and q['explanation']:
+            story.append(Paragraph(f"Explanation: {q['explanation']}", styles['Explanation']))
+        
+        story.append(Spacer(1, 12))
+
+    doc.build(story)
+    buffer.seek(0)
+    
+    filename = f"{quiz.title.replace(' ', '_')}_Quiz.pdf"
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
 
