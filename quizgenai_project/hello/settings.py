@@ -12,6 +12,8 @@ DEBUG = str(os.environ.get('DEBUG', 'True')).lower() in ('1', 'true', 'yes')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 ALLOWED_HOSTS = ['*']
+# Trust my custom domain for Forms/Logins
+CSRF_TRUSTED_ORIGINS = ['https://tanmaydawande.tech']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
