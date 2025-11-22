@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('custom_instructions', customInstructionsInput ? customInstructionsInput.value : '');
 
         try {
-            const response = await fetch('/api/generate-quiz/', {
+            const response = await fetch('/quizgenai/api/generate-quiz/', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentQuizId) {
             try {
-                await fetch('/api/save-attempt/', {
+                await fetch('/quizgenai/api/save-attempt/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -458,12 +458,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (currentQuizId && downloadBtn) {
-            downloadBtn.href = `/quiz/${currentQuizId}/download/`;
+            downloadBtn.href = `/quizgenai/quiz/${currentQuizId}/download/`;
             downloadBtn.style.display = 'inline-block';
         }
         
         if (currentQuizId && flashcardsBtn) {
-            flashcardsBtn.href = `/quiz/${currentQuizId}/flashcards/`;
+            flashcardsBtn.href = `/quizgenai/quiz/${currentQuizId}/flashcards/`;
             flashcardsBtn.style.display = 'inline-block';
         }
     }

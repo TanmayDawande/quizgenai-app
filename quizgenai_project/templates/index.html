@@ -23,18 +23,18 @@
         <aside id="sidebar">
             <div class="sidebar-header">
                 <h2>
-                    <a href="/quizgenai">
+                    <a href="/quizgenai/">
                         QuizGenAi
                     </a>
                 </h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="active"><a href="/quizgenai">New Quiz</a></li>
-                    <li><a href="quizgenai/history/">History</a></li>
-                    <li><a href="quizgenai/progress/">Progress</a></li>
+                    <li class="active"><a href="/quizgenai/">New Quiz</a></li>
+                    <li><a href="/quizgenai/history/">History</a></li>
+                    <li><a href="/quizgenai/progress/">Progress</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="quizgenai/settings/">Settings</a></li>
+                        <li><a href="/quizgenai/settings/">Settings</a></li>
                     {% endif %}
                 </ul>
             </nav>

@@ -34,18 +34,18 @@
         <aside id="sidebar">
             <div class="sidebar-header">
                 <h2>
-                    <a href="/">
+                    <a href="/quizgenai/">
                         QuizGenAi
                     </a>
                 </h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="/">New Quiz</a></li>
-                    <li class="active"><a href="/history/">History</a></li>
-                    <li><a href="/progress/">Progress</a></li>
+                    <li><a href="/quizgenai/">New Quiz</a></li>
+                    <li class="active"><a href="/quizgenai/history/">History</a></li>
+                    <li><a href="/quizgenai/progress/">Progress</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="/settings/">Settings</a></li>
+                        <li><a href="/quizgenai/settings/">Settings</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -85,7 +85,7 @@
                             <strong style="color: #FF9500;">Guest Limit Reached?</strong>
                             <p style="margin: 4px 0 0 0; font-size: 0.9rem; opacity: 0.8;">
                                 Only the last 5 quizzes are saved for guests. Older quizzes are automatically deleted. 
-                                <a href="/login/" style="color: var(--primary-color); font-weight: 600; text-decoration: underline;">Sign in</a> to save unlimited quizzes.
+                                <a href="/quizgenai/login/" style="color: var(--primary-color); font-weight: 600; text-decoration: underline;">Sign in</a> to save unlimited quizzes.
                             </p>
                         </div>
                     </div>
@@ -96,8 +96,8 @@
                         <p style="font-size: 1rem; color: var(--text-color); margin-bottom: 12px;"><strong>Unlock Your Personal Quiz History</strong></p>
                         <p style="font-size: 0.9rem; color: var(--subtle-text-color); margin-bottom: 15px;">Sign in to save your quiz history and access your generated quizzes from any device.</p>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            <a href="/login/" style="padding: 10px 20px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign In</a>
-                            <a href="/signup/" style="padding: 10px 20px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
+                            <a href="/quizgenai/login/" style="padding: 10px 20px; background-color: var(--primary-color); color: white; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign In</a>
+                            <a href="/quizgenai/signup/" style="padding: 10px 20px; background-color: var(--border-color); color: var(--text-color); text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem;">Sign Up</a>
                         </div>
                     </div>
                 {% endif %}
@@ -144,7 +144,7 @@
                         {% if user.is_authenticated %}
                             <p>You haven't generated any quizzes yet.</p>
                         {% else %}
-                            <p>No temporary quizzes available. <a href="/login/" style="color: var(--primary-color); font-weight: 500;">Sign in</a> to view your saved quizzes or generate new ones!</p>
+                            <p>No temporary quizzes available. <a href="/quizgenai/login/" style="color: var(--primary-color); font-weight: 500;">Sign in</a> to view your saved quizzes or generate new ones!</p>
                         {% endif %}
                     {% endif %}
 
@@ -204,7 +204,7 @@
                 return;
             }
 
-            fetch('/api/update-quiz-title/', {
+            fetch('/quizgenai/api/update-quiz-title/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -261,7 +261,7 @@
                 return;
             }
             
-            fetch('/api/delete-quiz/', {
+            fetch('/quizgenai/api/delete-quiz/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
