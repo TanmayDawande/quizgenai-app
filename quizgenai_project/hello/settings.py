@@ -13,7 +13,7 @@ DEBUG = str(os.environ.get('DEBUG', 'True')).lower() in ('1', 'true', 'yes')
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
