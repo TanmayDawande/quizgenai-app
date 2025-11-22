@@ -95,10 +95,8 @@ STATICFILES_DIRS = [
 # This is required for Render to collect your CSS files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# SUB-FOLDER CONFIGURATION FOR CLOUDFLARE & RENDER
-# This ensures links work at tanmaydawande.tech/quizgenai
 FORCE_SCRIPT_NAME = '/quizgenai'
-STATIC_URL = '/quizgenai/static/'
+STATIC_URL = '/static/' 
 LOGIN_URL = '/quizgenai/login/'
 LOGIN_REDIRECT_URL = '/quizgenai/'
 LOGOUT_REDIRECT_URL = '/quizgenai/'
