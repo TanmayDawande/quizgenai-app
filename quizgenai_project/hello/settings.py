@@ -1,20 +1,17 @@
 import os
 from pathlib import Path
 import dj_database_url
-import os
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-temporary-secret')
 
-# Read DEBUG from the environment. Accept common truthy strings.
+# Read DEBUG from the environment.
 DEBUG = str(os.environ.get('DEBUG', 'True')).lower() in ('1', 'true', 'yes')
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 ALLOWED_HOSTS = ['*']
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,6 +25,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Essential for static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,13 +53,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hello.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 # Database Configuration
-# ----------------------
-# Default to SQLite (Local)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -73,9 +65,6 @@ DATABASES = {
 database_url = os.environ.get("DATABASE_URL")
 if database_url:
     DATABASES["default"] = dj_database_url.parse(database_url)
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -92,34 +81,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#added manually
-
+# Static Files Configuration
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+# This is required for Render to collect your CSS files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
+# SUB-FOLDER CONFIGURATION FOR CLOUDFLARE & RENDER
+# This ensures links work at tanmaydawande.tech/quizgenai
+FORCE_SCRIPT_NAME = '/quizgenai'
+STATIC_URL = '/quizgenai/static/'
+LOGIN_URL = '/quizgenai/login/'
+LOGIN_REDIRECT_URL = '/quizgenai/'
+LOGOUT_REDIRECT_URL = '/quizgenai/'
