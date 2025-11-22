@@ -200,7 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('custom_instructions', customInstructionsInput ? customInstructionsInput.value : '');
 
         try {
-            const response = await fetch('/quizgenai/api/generate-quiz/', {
+            // UPDATED: Use dynamic API URL from index.html
+            const response = await fetch(API_URLS.generateQuiz, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
@@ -289,7 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentQuizId) {
             try {
-                await fetch('/quizgenai/api/save-attempt/', {
+                // UPDATED: Use dynamic API URL from index.html
+                await fetch(API_URLS.saveAttempt, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -457,13 +459,16 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackArea.appendChild(feedbackBlock);
         });
 
+        // Updated to use the FORCE_SCRIPT_NAME prefix logic if needed
+        // Ideally these should also be dynamic, but simple relative paths usually work 
+        // if the base URL is correct.
         if (currentQuizId && downloadBtn) {
-            downloadBtn.href = `/quizgenai/quiz/${currentQuizId}/download/`;
+            downloadBtn.href = `quiz/${currentQuizId}/download/`;
             downloadBtn.style.display = 'inline-block';
         }
         
         if (currentQuizId && flashcardsBtn) {
-            flashcardsBtn.href = `/quizgenai/quiz/${currentQuizId}/flashcards/`;
+            flashcardsBtn.href = `quiz/${currentQuizId}/flashcards/`;
             flashcardsBtn.style.display = 'inline-block';
         }
     }
@@ -492,4 +497,3 @@ document.addEventListener('DOMContentLoaded', () => {
         return cookieValue;
     }
 });
-
