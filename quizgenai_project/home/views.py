@@ -150,17 +150,21 @@ def quiz_retake_view(request, quiz_id):
 @require_http_methods(["POST"])
 def generate_quiz_view(request):
     pdf_file = request.FILES.get('pdf')
+    ppt_file = request.FILES.get('ppt')
     url_input = request.POST.get('url')
     num_questions = request.POST.get('num_questions', 5)
     custom_instructions = request.POST.get('custom_instructions', '')
 
-    if not pdf_file and not url_input:
-        return JsonResponse({'error': 'No PDF file or URL provided'}, status=400)
+    if not pdf_file and not ppt_file and not url_input:
+        return JsonResponse({'error': 'No PDF, PPT, or URL provided'}, status=400)
 
     try:
         if pdf_file:
             quiz_data = services.generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions)
             quiz_title = pdf_file.name if pdf_file.name else "Untitled Quiz"
+        elif ppt_file:
+            quiz_data = services.generate_quiz_from_ppt(ppt_file, num_questions, custom_instructions)
+            quiz_title = ppt_file.name if ppt_file.name else "Untitled Quiz"
         else:
             quiz_data = services.generate_quiz_from_url(url_input, num_questions, custom_instructions)
             # Create a title from the URL (domain + path)

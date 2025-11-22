@@ -27,9 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('results-container');
 
     const pdfInput = document.getElementById('pdf-input');
+    const pptInput = document.getElementById('ppt-input');
     const urlInput = document.getElementById('url-input');
     const ytInput = document.getElementById('yt-input');
     const fileNameDisplay = document.getElementById('file-name-display');
+    const pptFileNameDisplay = document.getElementById('ppt-file-name-display');
     const generateBtn = document.getElementById('generate-btn');
 
     const quizForm = document.getElementById('quiz-form');
@@ -71,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkGenerateButtonState() {
         if (activeTab === 'pdf-tab') {
             generateBtn.disabled = !(pdfInput.files.length > 0);
+        } else if (activeTab === 'ppt-tab') {
+            generateBtn.disabled = !(pptInput.files.length > 0);
         } else if (activeTab === 'url-tab') {
             generateBtn.disabled = !(urlInput && urlInput.value.trim().length > 0);
         } else if (activeTab === 'yt-tab') {
@@ -94,6 +98,18 @@ document.addEventListener('DOMContentLoaded', () => {
         checkGenerateButtonState();
     });
 
+    if (pptInput) {
+        pptInput.addEventListener('change', () => {
+            if (pptInput.files.length > 0) {
+                const fileName = pptInput.files[0].name;
+                pptFileNameDisplay.textContent = fileName;
+            } else {
+                pptFileNameDisplay.textContent = 'No file selected';
+            }
+            checkGenerateButtonState();
+        });
+    }
+
     if (urlInput) {
         urlInput.addEventListener('input', checkGenerateButtonState);
     }
@@ -116,6 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             formData.append('pdf', file);
+            
+            const fileSizeMB = file.size / (1024 * 1024);
+            estimatedMin += Math.ceil(fileSizeMB * 5);
+            estimatedMax += Math.ceil(fileSizeMB * 8);
+        } else if (activeTab === 'ppt-tab') {
+            const file = pptInput.files[0];
+            if (!file) {
+                alert("Please select a PPT file first.");
+                return;
+            }
+            formData.append('ppt', file);
             
             const fileSizeMB = file.size / (1024 * 1024);
             estimatedMin += Math.ceil(fileSizeMB * 5);
@@ -318,9 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('scrollable');
             
             pdfInput.value = '';
+            if (pptInput) pptInput.value = '';
             if (urlInput) urlInput.value = '';
             if (ytInput) ytInput.value = '';
             fileNameDisplay.textContent = 'No file selected';
+            if (pptFileNameDisplay) pptFileNameDisplay.textContent = 'No file selected';
             generateBtn.disabled = true;
             quizForm.innerHTML = '';
             feedbackArea.innerHTML = '';

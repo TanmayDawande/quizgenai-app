@@ -70,6 +70,7 @@
 
                     <div class="tab-container">
                         <button class="tab-btn active" data-tab="pdf-tab">Upload PDF</button>
+                        <button class="tab-btn" data-tab="ppt-tab">Upload PPT</button>
                         <button class="tab-btn" data-tab="url-tab">Enter URL</button>
                         <button class="tab-btn" data-tab="yt-tab">YouTube Video</button>
                     </div>
@@ -82,6 +83,17 @@
                             </label>
                             <span id="file-name-display" class="file-name">No file selected</span>
                         </div>
+                    </div>
+
+                    <div id="ppt-tab" class="tab-content">
+                        <div class="upload-area">
+                            <input type="file" id="ppt-input" accept=".ppt,.pptx" hidden>
+                            <label for="ppt-input" class="upload-label">
+                                <span>Choose a PPT/PPTX</span>
+                            </label>
+                            <span id="ppt-file-name-display" class="file-name">No file selected</span>
+                        </div>
+                        <p class="yt-note" style="text-align: center; margin-top: 10px;">Supported formats: .pptx (Modern) and .ppt (Legacy)</p>
                     </div>
 
 

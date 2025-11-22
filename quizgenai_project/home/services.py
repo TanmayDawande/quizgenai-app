@@ -2,10 +2,13 @@ import fitz
 import google.generativeai as genai
 import json
 import requests
+import olefile
+import struct
 from bs4 import BeautifulSoup
 from django.conf import settings
 from youtube_transcript_api import YouTubeTranscriptApi
 from urllib.parse import urlparse, parse_qs
+from pptx import Presentation
 
 try:
     genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -190,6 +193,90 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
         raise Exception(f"Could not process the PDF file: {fitz_error}")
 
     return generate_quiz_from_text(pdf_text, num_questions, custom_instructions)
+
+def extract_text_from_ppt_legacy(ppt_file):
+    """
+    Extract text from legacy .ppt files using olefile and manual record parsing.
+    This avoids external dependencies like LibreOffice.
+    """
+    try:
+        # Ensure we are at the beginning of the file
+        if hasattr(ppt_file, 'seek'):
+            ppt_file.seek(0)
+        
+        ole = olefile.OleFileIO(ppt_file)
+        
+        if not ole.exists('PowerPoint Document'):
+            return ""
+            
+        stream = ole.openstream('PowerPoint Document')
+        data = stream.read()
+        
+        text_runs = []
+        idx = 0
+        while idx < len(data):
+            # Read record header (8 bytes)
+            if idx + 8 > len(data):
+                break
+                
+            # ver_inst (2), type (2), length (4)
+            rec_ver_inst = struct.unpack('<H', data[idx:idx+2])[0]
+            rec_type = struct.unpack('<H', data[idx+2:idx+4])[0]
+            rec_len = struct.unpack('<I', data[idx+4:idx+8])[0]
+            
+            rec_ver = rec_ver_inst & 0x000F
+            
+            if rec_type == 4000: # TextCharsAtom (Unicode)
+                if idx + 8 + rec_len <= len(data):
+                    text_bytes = data[idx+8:idx+8+rec_len]
+                    try:
+                        text = text_bytes.decode('utf-16le')
+                        text_runs.append(text)
+                    except:
+                        pass
+                idx += 8 + rec_len
+            elif rec_type == 4008: # TextBytesAtom (ASCII/Latin-1)
+                if idx + 8 + rec_len <= len(data):
+                    text_bytes = data[idx+8:idx+8+rec_len]
+                    try:
+                        text = text_bytes.decode('latin-1')
+                        text_runs.append(text)
+                    except:
+                        pass
+                idx += 8 + rec_len
+            elif rec_ver == 0x0F: # Container
+                # Enter the container (just skip header)
+                idx += 8
+            else: # Other atom
+                # Skip the atom
+                idx += 8 + rec_len
+            
+        return "\n".join(text_runs)
+        
+    except Exception as e:
+        print(f"Error extracting text from legacy PPT: {e}")
+        raise Exception(f"Could not extract text from .ppt file: {e}")
+
+def generate_quiz_from_ppt(ppt_file, num_questions, custom_instructions):
+    try:
+        if ppt_file.name.lower().endswith('.ppt'):
+             ppt_text = extract_text_from_ppt_legacy(ppt_file)
+        elif ppt_file.name.lower().endswith('.pptx'):
+            prs = Presentation(ppt_file)
+            text_runs = []
+            for slide in prs.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text"):
+                        text_runs.append(shape.text)
+            ppt_text = "\n".join(text_runs)
+        else:
+             raise Exception("Unsupported file format. Please upload .ppt or .pptx.")
+             
+    except Exception as ppt_error:
+        print(f"Error opening or reading PPT: {ppt_error}")
+        raise Exception(f"Could not process the PPT file: {ppt_error}")
+
+    return generate_quiz_from_text(ppt_text, num_questions, custom_instructions)
 
 def generate_quiz_from_url(url, num_questions, custom_instructions):
     text = extract_text_from_url(url)
