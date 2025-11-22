@@ -2,6 +2,8 @@
 
 A web app that generates quizzes from PDFs using AI. Upload a PDF, pick how many questions you want, and the app will create a quiz for you in seconds.
 
+visit at : tanmaydawande.tech/quizgenai
+
 ## What It Does
 
 - **Generate quizzes** from PDF files automatically
