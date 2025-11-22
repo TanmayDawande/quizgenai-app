@@ -97,6 +97,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 FORCE_SCRIPT_NAME = '/quizgenai'
 STATIC_URL = '/static/' 
-LOGIN_URL = '/quizgenai/login/'
+LOGIN_URL = '/quizgenai/'
 LOGIN_REDIRECT_URL = '/quizgenai/'
 LOGOUT_REDIRECT_URL = '/quizgenai/'
