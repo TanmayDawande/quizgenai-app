@@ -102,3 +102,9 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/quizgenai/'
 LOGIN_REDIRECT_URL = '/quizgenai/'
 LOGOUT_REDIRECT_URL = '/quizgenai/'
+
+# SECURITY CONFIGURATION
+# Trust Cloudflare/Render's "X-Forwarded-Proto" header to know we are HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
