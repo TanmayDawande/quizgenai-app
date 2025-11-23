@@ -5,4 +5,15 @@ A web app that generates quizzes from PDFs or PPT/PPTX or a website link or a Yo
 <a href="https://tanmaydawande.tech/quizgenai" target="_blank">QuizGenAi</a>
 
 
-Full Stack Django using a PostgreSQL database also features user authentication.
+## Tech
+
+- **Backend**: Django, Python
+- **Database**: PostgreSQL (hosted on Neon.tech)
+- **AI**: Google Gemini 1.5 Falsh API
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **App Hosting**: Render (Web Serice)
+- **Traffic Routing**: Cloudflare Workers (Reverse Proxy)
+
+I calcuated that the free PostgreSQL (hosted on Neon.tech) can store ~25,000 bundles ( A bundle being a new user data + 25 questions quiz).
+Also, the free Gemini plan provides 1500 tokens per day per an API key so that means 1500 quizzes a day.
+
