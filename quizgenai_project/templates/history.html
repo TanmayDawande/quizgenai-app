@@ -131,7 +131,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <p class="quiz-date">Created on: {{ quiz.created_at|date:"F j, Y, g:i a" }}</p>
+                                <p class="quiz-date" data-timestamp="{{ quiz.created_at|date:'c' }}">Created on: {{ quiz.created_at|date:"F j, Y, g:i a" }}</p>
                                 
                                 <!-- This new div groups the two buttons together -->
                                 <div class="button-group">
@@ -297,6 +297,25 @@
                 alert('An error occurred while deleting the quiz');
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateElements = document.querySelectorAll('.quiz-date');
+            dateElements.forEach(el => {
+                const timestamp = el.getAttribute('data-timestamp');
+                if (timestamp) {
+                    const date = new Date(timestamp);
+                    const options = { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: 'numeric', 
+                        minute: 'numeric', 
+                        hour12: true 
+                    };
+                    el.textContent = 'Created on: ' + date.toLocaleString('en-US', options);
+                }
+            });
+        });
     </script>
 </body>
 </html>
