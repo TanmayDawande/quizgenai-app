@@ -5,7 +5,7 @@ import requests
 import olefile
 import struct
 import re
-import yt_dlp
+import os
 from bs4 import BeautifulSoup
 from django.conf import settings
 from urllib.parse import urlparse, parse_qs
@@ -20,11 +20,6 @@ except Exception as e:
 
 def extract_text_from_url(url):
     try:
-        # Check if it's a YouTube URL
-        parsed_url = urlparse(url)
-        if parsed_url.netloc in ['www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be']:
-            return extract_text_from_youtube(url)
-
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
@@ -41,94 +36,6 @@ def extract_text_from_url(url):
     except Exception as e:
         print(f"Error extracting text from URL: {e}")
         raise Exception(f"Could not extract text from the URL: {e}")
-
-def extract_text_from_youtube(url):
-    try:
-        ydl_opts = {
-            'skip_download': True,
-            'quiet': True,
-            'no_warnings': True,
-            'writesubtitles': True,
-            'writeautomaticsub': True,
-            'subtitleslangs': ['en.*'], 
-            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        }
-        
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            
-            subtitles = info.get('subtitles', {})
-            automatic_captions = info.get('automatic_captions', {})
-            
-            subs_list = None
-            
-            for lang in subtitles:
-                if lang.startswith('en'):
-                    subs_list = subtitles[lang]
-                    break
-            
-            if not subs_list:
-                for lang in automatic_captions:
-                    if lang.startswith('en'):
-                        subs_list = automatic_captions[lang]
-                        break
-            
-            if not subs_list:
-                raise Exception("No English subtitles found for this video.")
-                
-            sub_url = None
-            for sub in subs_list:
-                if sub.get('ext') == 'json3':
-                     sub_url = sub['url']
-                     break
-                if sub.get('ext') == 'vtt':
-                    sub_url = sub['url']
-            
-            if not sub_url:
-                 sub_url = subs_list[0]['url']
-
-            response = requests.get(sub_url)
-            response.raise_for_status()
-            content = response.text
-            
-            try:
-                json_data = json.loads(content)
-                events = json_data.get('events', [])
-                text_parts = []
-                for event in events:
-                    if 'segs' in event:
-                        for seg in event['segs']:
-                            if 'utf8' in seg:
-                                text_parts.append(seg['utf8'])
-                full_transcript = " ".join(text_parts)
-                return f"Transcript of YouTube Video ({info.get('title', url)}):\n{full_transcript}"
-            except json.JSONDecodeError:
-                pass
-
-            lines = content.splitlines()
-            text_lines = []
-            
-            timestamp_pattern = re.compile(r'\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3}')
-            
-            for line in lines:
-                line = line.strip()
-                if not line: continue
-                if line.startswith('WEBVTT') or line.startswith('Kind:') or line.startswith('Language:'): continue
-                if timestamp_pattern.match(line): continue
-                
-                line = re.sub(r'<[^>]+>', '', line)
-                
-                if text_lines and text_lines[-1] == line:
-                    continue
-                    
-                text_lines.append(line)
-            
-            full_transcript = " ".join(text_lines)
-            return f"Transcript of YouTube Video ({info.get('title', url)}):\n{full_transcript}"
-
-    except Exception as e:
-        print(f"Error extracting YouTube transcript: {e}")
-        raise Exception(f"Could not fetch YouTube transcript: {e}")
 
 def generate_quiz_from_text(text, num_questions, custom_instructions):
     if model is None:

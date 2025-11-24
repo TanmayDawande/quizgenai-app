@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfInput = document.getElementById('pdf-input');
     const pptInput = document.getElementById('ppt-input');
     const urlInput = document.getElementById('url-input');
-    const ytInput = document.getElementById('yt-input');
     const fileNameDisplay = document.getElementById('file-name-display');
     const pptFileNameDisplay = document.getElementById('ppt-file-name-display');
     const generateBtn = document.getElementById('generate-btn');
@@ -77,8 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
             generateBtn.disabled = !(pptInput.files.length > 0);
         } else if (activeTab === 'url-tab') {
             generateBtn.disabled = !(urlInput && urlInput.value.trim().length > 0);
-        } else if (activeTab === 'yt-tab') {
-            generateBtn.disabled = !(ytInput && ytInput.value.trim().length > 0);
         }
     }
 
@@ -112,10 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (urlInput) {
         urlInput.addEventListener('input', checkGenerateButtonState);
-    }
-
-    if (ytInput) {
-        ytInput.addEventListener('input', checkGenerateButtonState);
     }
 
     generateBtn.addEventListener('click', async () => {
@@ -155,16 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             formData.append('url', url);
             // Estimate for URL (assume average page size)
-            estimatedMin += 5;
-            estimatedMax += 10;
-        } else if (activeTab === 'yt-tab') {
-            const url = ytInput.value.trim();
-            if (!url) {
-                alert("Please enter a YouTube URL first.");
-                return;
-            }
-            formData.append('url', url);
-            // Estimate for YouTube (fetching transcript is fast, but processing might take time)
             estimatedMin += 5;
             estimatedMax += 10;
         }
@@ -347,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pdfInput.value = '';
             if (pptInput) pptInput.value = '';
             if (urlInput) urlInput.value = '';
-            if (ytInput) ytInput.value = '';
             fileNameDisplay.textContent = 'No file selected';
             if (pptFileNameDisplay) pptFileNameDisplay.textContent = 'No file selected';
             generateBtn.disabled = true;
