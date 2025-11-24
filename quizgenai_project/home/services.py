@@ -4,9 +4,10 @@ import json
 import requests
 import olefile
 import struct
+import re
+import yt_dlp
 from bs4 import BeautifulSoup
 from django.conf import settings
-from youtube_transcript_api import YouTubeTranscriptApi
 from urllib.parse import urlparse, parse_qs
 from pptx import Presentation
 
@@ -43,39 +44,91 @@ def extract_text_from_url(url):
 
 def extract_text_from_youtube(url):
     try:
-        video_id = None
-        parsed_url = urlparse(url)
+        ydl_opts = {
+            'skip_download': True,
+            'quiet': True,
+            'no_warnings': True,
+            'writesubtitles': True,
+            'writeautomaticsub': True,
+            'subtitleslangs': ['en.*'], 
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        }
         
-        if parsed_url.netloc == 'youtu.be':
-            video_id = parsed_url.path[1:]
-        elif parsed_url.netloc in ['www.youtube.com', 'youtube.com', 'm.youtube.com']:
-            if parsed_url.path == '/watch':
-                query_params = parse_qs(parsed_url.query)
-                video_id = query_params.get('v', [None])[0]
-            elif parsed_url.path.startswith('/embed/'):
-                video_id = parsed_url.path.split('/')[2]
-            elif parsed_url.path.startswith('/v/'):
-                video_id = parsed_url.path.split('/')[2]
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            
+            subtitles = info.get('subtitles', {})
+            automatic_captions = info.get('automatic_captions', {})
+            
+            subs_list = None
+            
+            for lang in subtitles:
+                if lang.startswith('en'):
+                    subs_list = subtitles[lang]
+                    break
+            
+            if not subs_list:
+                for lang in automatic_captions:
+                    if lang.startswith('en'):
+                        subs_list = automatic_captions[lang]
+                        break
+            
+            if not subs_list:
+                raise Exception("No English subtitles found for this video.")
+                
+            sub_url = None
+            for sub in subs_list:
+                if sub.get('ext') == 'json3':
+                     sub_url = sub['url']
+                     break
+                if sub.get('ext') == 'vtt':
+                    sub_url = sub['url']
+            
+            if not sub_url:
+                 sub_url = subs_list[0]['url']
 
-        if not video_id:
-            raise Exception("Could not extract video ID from YouTube URL")
+            response = requests.get(sub_url)
+            response.raise_for_status()
+            content = response.text
+            
+            try:
+                json_data = json.loads(content)
+                events = json_data.get('events', [])
+                text_parts = []
+                for event in events:
+                    if 'segs' in event:
+                        for seg in event['segs']:
+                            if 'utf8' in seg:
+                                text_parts.append(seg['utf8'])
+                full_transcript = " ".join(text_parts)
+                return f"Transcript of YouTube Video ({info.get('title', url)}):\n{full_transcript}"
+            except json.JSONDecodeError:
+                pass
 
-        # Instantiate the API and fetch the transcript
-        transcript_list = YouTubeTranscriptApi().fetch(video_id)
-        
-        # Combine transcript text
-        full_transcript = " ".join([item.text for item in transcript_list])
-        return f"Transcript of YouTube Video ({url}):\n{full_transcript}"
-        
+            lines = content.splitlines()
+            text_lines = []
+            
+            timestamp_pattern = re.compile(r'\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3}')
+            
+            for line in lines:
+                line = line.strip()
+                if not line: continue
+                if line.startswith('WEBVTT') or line.startswith('Kind:') or line.startswith('Language:'): continue
+                if timestamp_pattern.match(line): continue
+                
+                line = re.sub(r'<[^>]+>', '', line)
+                
+                if text_lines and text_lines[-1] == line:
+                    continue
+                    
+                text_lines.append(line)
+            
+            full_transcript = " ".join(text_lines)
+            return f"Transcript of YouTube Video ({info.get('title', url)}):\n{full_transcript}"
+
     except Exception as e:
         print(f"Error extracting YouTube transcript: {e}")
-        # Fallback or specific error message
-        if "TranscriptsDisabled" in str(e):
-             raise Exception("Transcripts are disabled for this video.")
-        elif "NoTranscriptFound" in str(e):
-             raise Exception("No transcript found for this video.")
-        else:
-             raise Exception(f"Could not fetch YouTube transcript: {e}")
+        raise Exception(f"Could not fetch YouTube transcript: {e}")
 
 def generate_quiz_from_text(text, num_questions, custom_instructions):
     if model is None:
@@ -108,8 +161,6 @@ def generate_quiz_from_text(text, num_questions, custom_instructions):
     else:
         prompt_instructions = ""
 
-    # Truncate text if it's too long to avoid token limits (approx 30k chars is safe for Flash)
-    # Gemini 1.5 Flash has a huge context window, but let's be safe and efficient
     max_chars = 100000 
     if len(text) > max_chars:
         text = text[:max_chars] + "...(truncated)"
@@ -195,12 +246,7 @@ def generate_quiz_from_pdf(pdf_file, num_questions, custom_instructions):
     return generate_quiz_from_text(pdf_text, num_questions, custom_instructions)
 
 def extract_text_from_ppt_legacy(ppt_file):
-    """
-    Extract text from legacy .ppt files using olefile and manual record parsing.
-    This avoids external dependencies like LibreOffice.
-    """
     try:
-        # Ensure we are at the beginning of the file
         if hasattr(ppt_file, 'seek'):
             ppt_file.seek(0)
         
@@ -215,18 +261,16 @@ def extract_text_from_ppt_legacy(ppt_file):
         text_runs = []
         idx = 0
         while idx < len(data):
-            # Read record header (8 bytes)
             if idx + 8 > len(data):
                 break
                 
-            # ver_inst (2), type (2), length (4)
             rec_ver_inst = struct.unpack('<H', data[idx:idx+2])[0]
             rec_type = struct.unpack('<H', data[idx+2:idx+4])[0]
             rec_len = struct.unpack('<I', data[idx+4:idx+8])[0]
             
             rec_ver = rec_ver_inst & 0x000F
             
-            if rec_type == 4000: # TextCharsAtom (Unicode)
+            if rec_type == 4000:
                 if idx + 8 + rec_len <= len(data):
                     text_bytes = data[idx+8:idx+8+rec_len]
                     try:
@@ -235,7 +279,7 @@ def extract_text_from_ppt_legacy(ppt_file):
                     except:
                         pass
                 idx += 8 + rec_len
-            elif rec_type == 4008: # TextBytesAtom (ASCII/Latin-1)
+            elif rec_type == 4008:
                 if idx + 8 + rec_len <= len(data):
                     text_bytes = data[idx+8:idx+8+rec_len]
                     try:
@@ -244,11 +288,9 @@ def extract_text_from_ppt_legacy(ppt_file):
                     except:
                         pass
                 idx += 8 + rec_len
-            elif rec_ver == 0x0F: # Container
-                # Enter the container (just skip header)
+            elif rec_ver == 0x0F:
                 idx += 8
-            else: # Other atom
-                # Skip the atom
+            else:
                 idx += 8 + rec_len
             
         return "\n".join(text_runs)
