@@ -399,6 +399,12 @@ p {
     background-color: rgba(0, 122, 255, 0.05);
 }
 
+.upload-area.drag-over {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 122, 255, 0.1);
+    transform: scale(1.02);
+}
+
 body.dark-mode .upload-area {
     background-color: rgba(255, 255, 255, 0.02);
 }
@@ -910,10 +916,6 @@ input[type="text"]:focus, input[type="url"]:focus, input[type="password"]:focus,
     border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
 }
-
-
-
-
 
 /* --- Placeholders --- */
 ::placeholder {

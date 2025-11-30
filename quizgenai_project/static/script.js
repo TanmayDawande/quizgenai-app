@@ -49,6 +49,73 @@ document.addEventListener('DOMContentLoaded', () => {
     let countdownInterval = null;
     let activeTab = 'pdf-tab';
 
+    // Drag and Drop Logic
+    const pdfUploadArea = document.querySelector('#pdf-tab .upload-area');
+    const pptUploadArea = document.querySelector('#ppt-tab .upload-area');
+
+    function setupDragAndDrop(area, inputElement, fileType) {
+        if (!area || !inputElement) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            area.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            area.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            area.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            area.classList.remove('drag-over');
+        }
+
+        area.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                const file = files[0];
+                if (validateFile(file, fileType)) {
+                    inputElement.files = files;
+                    // Trigger change event manually
+                    const event = new Event('change');
+                    inputElement.dispatchEvent(event);
+                } else {
+                    alert(`Please upload a valid ${fileType.toUpperCase()} file.`);
+                }
+            }
+        }
+    }
+
+    function validateFile(file, type) {
+        if (type === 'pdf') {
+            return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        } else if (type === 'ppt') {
+            return file.type === 'application/vnd.ms-powerpoint' || 
+                   file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+                   file.name.toLowerCase().endsWith('.ppt') || 
+                   file.name.toLowerCase().endsWith('.pptx');
+        }
+        return false;
+    }
+
+    setupDragAndDrop(pdfUploadArea, pdfInput, 'pdf');
+    setupDragAndDrop(pptUploadArea, pptInput, 'ppt');
+
     // Tab Handling
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
