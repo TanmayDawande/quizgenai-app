@@ -78,6 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function unhighlight(e) {
+            // Prevent flickering when dragging over children
+            if (e.type === 'dragleave' && area.contains(e.relatedTarget)) {
+                return;
+            }
             area.classList.remove('drag-over');
         }
 
@@ -90,9 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (files.length > 0) {
                 const file = files[0];
                 if (validateFile(file, fileType)) {
-                    inputElement.files = files;
+                    // Use DataTransfer to correctly set files on the input
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    inputElement.files = dataTransfer.files;
+                    
                     // Trigger change event manually
-                    const event = new Event('change');
+                    const event = new Event('change', { bubbles: true });
                     inputElement.dispatchEvent(event);
                 } else {
                     alert(`Please upload a valid ${fileType.toUpperCase()} file.`);
