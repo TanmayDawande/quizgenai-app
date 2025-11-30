@@ -56,57 +56,60 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupDragAndDrop(area, inputElement, fileType) {
         if (!area || !inputElement) return;
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            area.addEventListener(eventName, preventDefaults, false);
+        const events = ['dragenter', 'dragover', 'dragleave', 'drop'];
+
+        // Prevent default behaviors for all drag events
+        events.forEach(eventName => {
+            area.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
         });
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
+        // Highlight on drag enter/over
         ['dragenter', 'dragover'].forEach(eventName => {
-            area.addEventListener(eventName, highlight, false);
+            area.addEventListener(eventName, () => {
+                area.classList.add('drag-over');
+            }, false);
         });
 
+        // Unhighlight on drag leave/drop
         ['dragleave', 'drop'].forEach(eventName => {
-            area.addEventListener(eventName, unhighlight, false);
+            area.addEventListener(eventName, (e) => {
+                // Prevent flickering when dragging over children
+                if (e.type === 'dragleave' && e.relatedTarget && area.contains(e.relatedTarget)) {
+                    return;
+                }
+                area.classList.remove('drag-over');
+            }, false);
         });
 
-        function highlight(e) {
-            area.classList.add('drag-over');
-        }
-
-        function unhighlight(e) {
-            // Prevent flickering when dragging over children
-            if (e.type === 'dragleave' && area.contains(e.relatedTarget)) {
-                return;
-            }
-            area.classList.remove('drag-over');
-        }
-
-        area.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
+        // Handle Drop
+        area.addEventListener('drop', (e) => {
             const dt = e.dataTransfer;
             const files = dt.files;
 
-            if (files.length > 0) {
+            if (files && files.length > 0) {
                 const file = files[0];
+                console.log("File dropped:", file.name);
+
                 if (validateFile(file, fileType)) {
-                    // Use DataTransfer to correctly set files on the input
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    inputElement.files = dataTransfer.files;
-                    
-                    // Trigger change event manually
-                    const event = new Event('change', { bubbles: true });
-                    inputElement.dispatchEvent(event);
+                    try {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        inputElement.files = dataTransfer.files;
+                        
+                        // Trigger change event
+                        inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    } catch (err) {
+                        console.error("Error updating input files:", err);
+                        alert("There was an error processing the file. Please try using the 'Choose File' button.");
+                    }
                 } else {
                     alert(`Please upload a valid ${fileType.toUpperCase()} file.`);
                 }
             }
-        }
+        }, false);
     }
 
     function validateFile(file, type) {
