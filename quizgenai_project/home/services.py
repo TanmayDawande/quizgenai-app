@@ -94,23 +94,21 @@ def generate_quiz_from_text(text, num_questions, custom_instructions):
 
         response_text = response.text.strip()
         
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        elif response_text.startswith("```"):
-            response_text = response_text[3:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
-        
-        if response_text.startswith("<") or response_text.startswith("<!"):
-            start_idx = response_text.find("[")
-            if start_idx != -1:
-                response_text = response_text[start_idx:]
-        
-        last_bracket = response_text.rfind("]")
-        if last_bracket != -1:
-            response_text = response_text[:last_bracket + 1]
-        
-        response_text = response_text.strip()
+        # Robust JSON extraction: find the first '[' and the last ']'
+        start_idx = response_text.find("[")
+        end_idx = response_text.rfind("]")
+
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            response_text = response_text[start_idx:end_idx+1]
+        else:
+            # Fallback: basic markdown cleanup if brackets aren't found correctly
+            if response_text.startswith("```json"):
+                response_text = response_text[7:]
+            elif response_text.startswith("```"):
+                response_text = response_text[3:]
+            if response_text.endswith("```"):
+                response_text = response_text[:-3]
+            response_text = response_text.strip()
 
         quiz_data = json.loads(response_text)
         
