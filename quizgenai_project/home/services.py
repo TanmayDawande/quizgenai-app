@@ -13,6 +13,7 @@ from pptx import Presentation
 
 try:
     genai.configure(api_key=settings.GEMINI_API_KEY)
+
     model = genai.GenerativeModel('gemini-2.5-flash')
 except Exception as e:
     print(f"Error configuring Gemini API in services.py: {e}")
@@ -68,7 +69,8 @@ def generate_quiz_from_text(text, num_questions, custom_instructions):
     else:
         prompt_instructions = ""
 
-    max_chars = 100000 
+    # Reduced character limit to speed up processing (approx 10-15k tokens)
+    max_chars = 50000 
     if len(text) > max_chars:
         text = text[:max_chars] + "...(truncated)"
 
