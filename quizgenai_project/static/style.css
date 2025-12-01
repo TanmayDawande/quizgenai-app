@@ -573,7 +573,16 @@ button:disabled {
     align-items: center;
     justify-content: center;
     gap: 30px;
-    padding: 40px 0;
+    padding: 40px;
+    background-color: var(--container-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-top: 20px;
+}
+
+body.dark-mode #loading-container {
+    background-color: var(--container-bg);
 }
 
 .loader {
