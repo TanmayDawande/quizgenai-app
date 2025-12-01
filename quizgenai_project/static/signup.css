@@ -15,15 +15,10 @@ body.dark-mode {
 }
 
 .auth-container {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    background: transparent;
+    padding: 40px 20px;
     width: 100%;
     max-width: 450px; /* Slightly wider to accommodate side-by-side inputs */
-    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .name-row {
@@ -36,9 +31,9 @@ body.dark-mode {
 }
 
 body.dark-mode .auth-container {
-    background: rgba(39, 39, 42, 0.9); /* Zinc 800 with high opacity */
-    border: 1px solid rgba(255, 255, 255, 0.15); /* More visible border */
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .auth-header {

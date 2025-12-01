@@ -97,11 +97,22 @@ STATICFILES_DIRS = [
 # This is required for Render to collect your CSS files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-FORCE_SCRIPT_NAME = '/quizgenai'
-STATIC_URL = '/static/' 
-LOGIN_URL = '/quizgenai/'
-LOGIN_REDIRECT_URL = '/quizgenai/'
-LOGOUT_REDIRECT_URL = '/quizgenai/'
+# Check if we are running on Render by looking for the RENDER environment variable
+RENDER = os.environ.get('RENDER')
+
+if RENDER:
+    # Production settings (Render)
+    FORCE_SCRIPT_NAME = '/quizgenai'
+    STATIC_URL = '/static/'
+    LOGIN_URL = '/quizgenai/login/'
+    LOGIN_REDIRECT_URL = '/quizgenai/'
+    LOGOUT_REDIRECT_URL = '/quizgenai/'
+else:
+    # Local development settings
+    STATIC_URL = '/static/'
+    LOGIN_URL = '/login/'
+    LOGIN_REDIRECT_URL = '/'
+    LOGOUT_REDIRECT_URL = '/'
 
 # SECURITY CONFIGURATION
 # Trust Cloudflare/Render's "X-Forwarded-Proto" header to know we are HTTPS

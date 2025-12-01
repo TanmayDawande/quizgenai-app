@@ -194,9 +194,9 @@ body.dark-mode .sidebar-logo {
     color: var(--text-color);
 }
 
-body.dark-mode .toggle-icon {
+/* body.dark-mode .toggle-icon {
     color: #FFD700;
-}
+} */
 
 .sidebar-nav ul {
     list-style: none;
@@ -349,15 +349,14 @@ body.dark-mode .user-profile:hover {
 
 /* --- Main Content Container (The Card) --- */
 .container {
-    background-color: var(--container-bg);
-    padding: 48px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
     width: 100%;
-    max-width: 700px;
+    max-width: 600px;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 header {
@@ -666,19 +665,19 @@ button:disabled {
 .question-block {
     margin-bottom: 32px;
     padding: 32px;
-    background: var(--bg-color);
+    background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .question-block:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    border-color: var(--text-color);
 }
 
 body.dark-mode .question-block {
-    background: rgba(255, 255, 255, 0.03);
+    background: transparent;
 }
 
 .question-text {

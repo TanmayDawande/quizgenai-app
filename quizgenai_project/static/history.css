@@ -5,7 +5,7 @@
 }
 
 .history-item {
-    background-color: var(--container-bg);
+    background-color: transparent;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: 24px;
@@ -18,12 +18,11 @@
 }
 
 body.dark-mode .history-item {
-    background-color: var(--container-bg);
+    background-color: transparent;
 }
 
 .history-item:hover {
-    box-shadow: var(--card-shadow);
-    border-color: var(--subtle-text-color);
+    border-color: var(--text-color);
 }
 
 .quiz-title {
